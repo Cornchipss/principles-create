@@ -11,11 +11,10 @@ import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.map.troops.Unit;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.FancyCamera;
-import com.superempires.game.render.IDrawable;
 import com.superempires.game.render.MasterBatch;
 import com.superempires.game.util.Helper;
 
-public class GameMap implements IDrawable
+public class GameMap
 {
 	private final int WIDTH, HEIGHT;
 	
@@ -67,15 +66,29 @@ public class GameMap implements IDrawable
 	    
 		cam.update();
 		
-		int mouseIndexX;
-		int mouseIndexY;
+		Vector2 index = worldCoordsToTileIndex(mouseWorldCoords);
 		
-		int xIndexIsh = mouseIndexX = (int) (mouseWorldCoords.x / (0.75f * Tile.WIDTH));
-		int yIndexIsh = mouseIndexY = (int) (mouseWorldCoords.y / Tile.HEIGHT);
+		if(within((int)index.x, (int)index.y))
+		{			
+			getTile((int)index.x, (int)index.y).setHighlighted(true);
+		}
+	}
+	
+	public boolean within(int indexX, int indexY)
+	{
+		return indexX >= 0 && indexX < WIDTH && indexY >= 0 && indexY < HEIGHT;
+	}
+	
+	public Vector2 worldCoordsToTileIndex(Vector2 coords)
+	{
+		int realIndexX, realIndexY;
+		
+		int xIndexIsh = realIndexX = (int) (coords.x / (0.75f * Tile.WIDTH));
+		int yIndexIsh = realIndexY = (int) (coords.y / Tile.HEIGHT);
 		
 		if(within(xIndexIsh, yIndexIsh))
 		{
-			float closest = Helper.distanceSquared(mouseWorldCoords, getTile(xIndexIsh, yIndexIsh).getTransform().getCenter());
+			float closest = Helper.distanceSquared(coords, getTile(xIndexIsh, yIndexIsh).getTransform().getCenter());
 			
 			for(int dY = -1; dY <= 1; dY++)
 			{
@@ -87,25 +100,20 @@ public class GameMap implements IDrawable
 						
 						if(within(indexX, indexY))
 						{
-							float dist = Helper.distanceSquared(mouseWorldCoords, getTile(indexX, indexY).getTransform().getCenter());
+							float dist = Helper.distanceSquared(coords, getTile(indexX, indexY).getTransform().getCenter());
 							if(dist < closest)
 							{
 								closest = dist;
-								mouseIndexX = indexX;
-								mouseIndexY = indexY;
+								realIndexX = indexX;
+								realIndexY = indexY;
 							}
 						}
 					}
 				}
 			}
-			
-			getTile(mouseIndexX, mouseIndexY).setHighlighted(true);
 		}
-	}
-	
-	public boolean within(int indexX, int indexY)
-	{
-		return indexX >= 0 && indexX < WIDTH && indexY >= 0 && indexY < HEIGHT;
+		
+		return new Vector2(realIndexX, realIndexY);
 	}
 	
 	public Tile getTile(int x, int y) { return tiles[y][x]; }
@@ -124,7 +132,6 @@ public class GameMap implements IDrawable
 		return new Transform(0, -0.25f, getWidth(), getHeight());
 	}
 	
-	@Override
 	public void drawShapes(ShapeRenderer batch)
 	{
 		for(int y = 0; y < HEIGHT; y++)
@@ -141,7 +148,6 @@ public class GameMap implements IDrawable
 		}
 	}
 
-	@Override
 	public void drawLines(ShapeRenderer batch)
 	{
 		for(int y = 0; y < HEIGHT; y++)
@@ -158,7 +164,6 @@ public class GameMap implements IDrawable
 		}
 	}
 
-	@Override
 	public void drawPolygons(PolygonSpriteBatch batch)
 	{
 		for(int y = 0; y < HEIGHT; y++)
@@ -175,7 +180,6 @@ public class GameMap implements IDrawable
 		}
 	}
 
-	@Override
 	public void drawSprites(SpriteBatch batch)
 	{
 		for(int y = 0; y < HEIGHT; y++)
@@ -192,8 +196,10 @@ public class GameMap implements IDrawable
 		}
 	}
 
-	public void drawAll(MasterBatch batch)
+	public void drawAll(FancyCamera cam, MasterBatch batch)
 	{
+		
+		
 		batch.getPolyBatch().begin();
 		drawPolygons(batch.getPolyBatch());
 		batch.getPolyBatch().end();

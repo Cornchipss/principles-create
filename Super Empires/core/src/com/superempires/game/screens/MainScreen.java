@@ -37,7 +37,7 @@ public class MainScreen implements Screen
 		
 		batch.setProjectionMatrix(cam.getCombined());
 		
-		map.drawAll(batch);
+		map.drawAll(cam, batch);
 		
 		int spd = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? 4 : 1;
 		
