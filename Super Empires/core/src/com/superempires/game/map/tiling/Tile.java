@@ -22,8 +22,8 @@ public class Tile extends PhysicalObject implements IDrawable
 	
 	private Texture texture = GameRegistry.getTexture("tile");
 	
-	public static final float WIDTH = 64 * 4;
-	public static final float HEIGHT = 64 * 3;
+	public static final float WIDTH = 64 * 1;
+	public static final float HEIGHT = 64 * 1;
 	
 	private static final float[] vertices = new float[]
 	{

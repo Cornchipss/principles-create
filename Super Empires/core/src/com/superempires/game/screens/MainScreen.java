@@ -14,7 +14,7 @@ public class MainScreen implements Screen
 {
 	private FancyCamera cam = new FancyCamera(Reference.VIEWPORT_WIDTH, Reference.VIEWPORT_HEIGHT);
 	private MasterBatch batch;
-	private GameMap map = new GameMap(20, 20);
+	private GameMap map = new GameMap(200, 200);
 	
 	public MainScreen()
 	{
@@ -39,7 +39,7 @@ public class MainScreen implements Screen
 		
 		map.drawAll(cam, batch);
 		
-		int spd = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? 4 : 1;
+		int spd = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? 20 : 1;
 		
 		cam.translate((Gdx.input.isKeyPressed(Input.Keys.D) ? 5 : 0) * spd, (Gdx.input.isKeyPressed(Input.Keys.W) ? 5 : 0) * spd);
 		cam.translate((Gdx.input.isKeyPressed(Input.Keys.A) ? -5 : 0) * spd, (Gdx.input.isKeyPressed(Input.Keys.S) ? -5 : 0) * spd);

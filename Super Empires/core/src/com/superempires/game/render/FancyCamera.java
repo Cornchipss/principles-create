@@ -43,4 +43,9 @@ public class FancyCamera
 	public Matrix4 getCombined() { return cam.combined; }
 
 	public OrthographicCamera getCamera() { return cam; }
+
+	public Vector2 getPosition2()
+	{
+		return new Vector2(position.x, position.y);
+	}
 }

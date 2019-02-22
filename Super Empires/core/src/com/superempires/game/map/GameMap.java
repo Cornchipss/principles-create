@@ -13,6 +13,7 @@ import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
 import com.superempires.game.util.Helper;
+import com.superempires.game.util.Vector2i;
 
 public class GameMap
 {
@@ -66,11 +67,11 @@ public class GameMap
 	    
 		cam.update();
 		
-		Vector2 index = worldCoordsToTileIndex(mouseWorldCoords);
+		Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
 		
-		if(within((int)index.x, (int)index.y))
+		if(within(index.x, index.y))
 		{			
-			getTile((int)index.x, (int)index.y).setHighlighted(true);
+			getTile(index.x, index.y).setHighlighted(true);
 		}
 	}
 	
@@ -79,7 +80,7 @@ public class GameMap
 		return indexX >= 0 && indexX < WIDTH && indexY >= 0 && indexY < HEIGHT;
 	}
 	
-	public Vector2 worldCoordsToTileIndex(Vector2 coords)
+	public Vector2i worldCoordsToTileIndex(Vector2 coords)
 	{
 		int realIndexX, realIndexY;
 		
@@ -113,7 +114,7 @@ public class GameMap
 			}
 		}
 		
-		return new Vector2(realIndexX, realIndexY);
+		return new Vector2i(realIndexX != -1 ? realIndexX : 0, realIndexY != -1 ? realIndexY : 0);
 	}
 	
 	public Tile getTile(int x, int y) { return tiles[y][x]; }
@@ -132,7 +133,7 @@ public class GameMap
 		return new Transform(0, -0.25f, getWidth(), getHeight());
 	}
 	
-	public void drawShapes(ShapeRenderer batch)
+	public void drawShapes(FancyCamera cam, ShapeRenderer batch)
 	{
 		for(int y = 0; y < HEIGHT; y++)
 		{
@@ -148,7 +149,7 @@ public class GameMap
 		}
 	}
 
-	public void drawLines(ShapeRenderer batch)
+	public void drawLines(FancyCamera cam, ShapeRenderer batch)
 	{
 		for(int y = 0; y < HEIGHT; y++)
 		{
@@ -164,27 +165,40 @@ public class GameMap
 		}
 	}
 
-	public void drawPolygons(PolygonSpriteBatch batch)
+	public void drawPolygons(FancyCamera cam, PolygonSpriteBatch batch)
 	{
-		for(int y = 0; y < HEIGHT; y++)
+		float width = Gdx.graphics.getWidth();
+		float height = Gdx.graphics.getHeight();
+		
+		Vector2i pos = worldCoordsToTileIndex(cam.getPosition2().cpy().sub(width / 2 + Tile.WIDTH / 4, height / 2 + Tile.HEIGHT / 2));
+		
+		float maxY = Math.min(getHeight(), pos.y + height / Tile.HEIGHT + 2);
+		float maxX = Math.min(getWidth() , pos.x + width / Tile.WIDTH + 0);
+		
+		for(int y = pos.y; y < maxY; y++)
 		{
-			for(int x = 0; x < WIDTH; x++)
+			for(int x = pos.x; x < maxX; x++)
 			{
-				if(tiles[y][x] != null)
-					tiles[y][x].drawPolygons(batch);
-				if(buildings[y][x] != null)
-					buildings[y][x].drawPolygons(batch);
-				if(units[y][x] != null)
-					units[y][x].drawPolygons(batch);
+				if(y != -1)
+				{
+					if(tiles[y][x] != null)
+						tiles[y][x].drawPolygons(batch);
+					if(buildings[y][x] != null)
+						buildings[y][x].drawPolygons(batch);
+					if(units[y][x] != null)
+						units[y][x].drawPolygons(batch);
+				}
 			}
 		}
 	}
 
-	public void drawSprites(SpriteBatch batch)
+	public void drawSprites(FancyCamera cam, SpriteBatch batch)
 	{
-		for(int y = 0; y < HEIGHT; y++)
+		Vector2i pos = worldCoordsToTileIndex(cam.getPosition2());
+		
+		for(int y = pos.y; y < HEIGHT; y++)
 		{
-			for(int x = 0; x < WIDTH; x++)
+			for(int x = pos.x; x < WIDTH; x++)
 			{
 				if(tiles[y][x] != null)
 					tiles[y][x].drawSprites(batch);
@@ -198,22 +212,20 @@ public class GameMap
 
 	public void drawAll(FancyCamera cam, MasterBatch batch)
 	{
-		
-		
 		batch.getPolyBatch().begin();
-		drawPolygons(batch.getPolyBatch());
+		drawPolygons(cam, batch.getPolyBatch());
 		batch.getPolyBatch().end();
 		
 		batch.getSpriteBatch().begin();
-		drawSprites(batch.getSpriteBatch());
+		drawSprites(cam, batch.getSpriteBatch());
 		batch.getSpriteBatch().end();
 		
 		batch.getShapeBatch().begin(ShapeType.Filled);
-		drawShapes(batch.getShapeBatch());
+		drawShapes(cam, batch.getShapeBatch());
 		batch.getShapeBatch().end();
 		
 		batch.getShapeBatch().begin(ShapeType.Line);
-		drawLines(batch.getShapeBatch());
+		drawLines(cam, batch.getShapeBatch());
 		batch.getShapeBatch().end();
 	}
 }
