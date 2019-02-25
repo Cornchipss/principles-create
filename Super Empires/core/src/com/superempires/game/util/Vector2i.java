@@ -21,4 +21,23 @@ public class Vector2i
 	{
 		return new Vector2(x, y);
 	}
+
+	public Vector2i sub(int i, int j)
+	{
+		x -= i;
+		y -= j;
+		return this;
+	}
+	
+	public Vector2i add(int i, int j)
+	{
+		x += i;
+		y += j;
+		return this;
+	}
+	
+	public Vector2i cpy()
+	{
+		return new Vector2i(x, y);
+	}
 }

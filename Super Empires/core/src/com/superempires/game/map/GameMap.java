@@ -1,6 +1,7 @@
 package com.superempires.game.map;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -20,8 +21,8 @@ public class GameMap
 	private final int WIDTH, HEIGHT;
 	
 	private final Tile[][] tiles;
-	private final Building[][] buildings;
-	private final Unit[][] units;
+	
+	private Tile hoveredTile, selectedTile;
 	
 	public GameMap(int w, int h)
 	{
@@ -29,8 +30,6 @@ public class GameMap
 		HEIGHT = h;
 		
 		tiles = new Tile[h][w];
-		buildings = new Building[h][w];
-		units = new Unit[h][w];
 		
 		for(int y = 0; y < HEIGHT; y++)
 		{
@@ -38,40 +37,65 @@ public class GameMap
 			{
 				boolean odd = x % 2 != 0;
 				
-				float xPos = x * 4f / 4 * Tile.WIDTH - (Tile.WIDTH / 4f * x);
-				float yPos = y * Tile.HEIGHT - (odd ? Tile.HEIGHT / 2 : 0);
+				float xPos = x * 4f / 4 * Tile.DIMENSIONS - (Tile.DIMENSIONS / 4f * x);
+				float yPos = y * Tile.DIMENSIONS - (odd ? Tile.DIMENSIONS / 2 : 0);
 				
 				tiles[y][x] = new Tile(xPos, yPos);
-				
-//				if(Math.random() < 0.05)
-//				{
-//					buildings[y][x] = new TestBuilding(x * Tile.WIDTH, y * Tile.HEIGHT);
-//					units[y][x] = new Unit(x * Tile.WIDTH, y * Tile.HEIGHT);
-//				}
 			}
 		}
 	}
 	
 	public void update(FancyCamera cam, float delta)
 	{
-	    Vector2 mouseWorldCoords = cam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
-	    
 	    Transform bounds = getBounds();
 	    
 	    cam.position.set(
-    		Helper.clamp(cam.position.x, Gdx.graphics.getWidth() / 2 + bounds.getX() * Tile.WIDTH, 
-    				bounds.getWidth() * Tile.WIDTH - Gdx.graphics.getWidth() / 2), 
-    		Helper.clamp(cam.position.y, Gdx.graphics.getHeight() / 2 + bounds.getY() * 2 * Tile.HEIGHT, 
-    				bounds.getHeight() * Tile.HEIGHT - Gdx.graphics.getHeight() / 2), 
+    		Helper.clamp(cam.position.x, Gdx.graphics.getWidth() / 2 + bounds.getX() * Tile.DIMENSIONS, 
+    				bounds.getWidth() * Tile.DIMENSIONS - Gdx.graphics.getWidth() / 2), 
+    		Helper.clamp(cam.position.y, Gdx.graphics.getHeight() / 2 + bounds.getY() * 2 * Tile.DIMENSIONS, 
+    				bounds.getHeight() * Tile.DIMENSIONS - Gdx.graphics.getHeight() / 2), 
     		cam.position.z);
 	    
 		cam.update();
 		
-		Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
+		int mouseX = Gdx.input.getX();
+		int mouseY = Gdx.input.getY();
 		
-		if(within(index.x, index.y))
-		{			
-			getTile(index.x, index.y).setHighlighted(true);
+		if(mouseX >= 0 && mouseX <= Gdx.graphics.getWidth() && mouseY >= 0 && mouseY <= Gdx.graphics.getHeight())
+		{		
+		    Vector2 mouseWorldCoords = cam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
+		    
+			Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
+			
+			if(within(index.x, index.y))
+			{
+				if(hoveredTile != null)
+					hoveredTile.setHighlighted(false);
+				
+				hoveredTile = getTile(index.x, index.y);
+				
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+				{
+					final int RADIUS = 5;
+					
+					if(selectedTile != null)
+					{
+						selectedTile.setSelected(false);
+						Vector2i point = worldCoordsToTileIndex(selectedTile.getTransform().getCenter());
+						for(Tile t : getAdjacentTiles(point.x, point.y, RADIUS))
+							if(t != null)
+								t.setHighlighted(false);
+					}
+					
+					(selectedTile = hoveredTile).setSelected(true);
+					
+					for(Tile t : getAdjacentTiles(index.x, index.y, RADIUS))
+						if(t != null)
+							t.setHighlighted(true);
+				}
+				else
+					hoveredTile.setHighlighted(true);
+			}
 		}
 	}
 	
@@ -80,12 +104,47 @@ public class GameMap
 		return indexX >= 0 && indexX < WIDTH && indexY >= 0 && indexY < HEIGHT;
 	}
 	
+	public Tile[] getAdjacentTiles(int indexX, int indexY, int radius)
+	{		
+		int tiles = 0;
+		for(int i = 0; i <= radius; i++)
+			tiles += 6 * i;
+		
+		Tile[] toReturn = new Tile[tiles];
+		
+		int i = 0;
+		
+		for(int dX = -radius; dX <= radius; dX++)
+		{
+			//for(int dY = (odd ? -radius : (dX != 0 ? 0 : -radius)); dY <= (odd ? (dX != 0 ? 0 : radius) : radius); dY++)
+			for(int dY = -radius; dY <= radius; dY++)
+			{
+				if(dX != 0 || dY != 0)
+				{
+					int ix = dX + indexX, iy = dY + indexY;
+					
+					if(within(ix, iy))
+					{
+						if(Helper.distanceSquared(getTile(indexX, indexY).getTransform().getCenter(), 
+								getTile(ix, iy).getTransform().getCenter()) <= (radius * Tile.DIMENSIONS) * (radius * Tile.DIMENSIONS))
+						{
+							toReturn[i] = getTile(ix, iy);
+							i++;
+						}
+					}
+				}
+			}
+		}
+		
+		return toReturn;
+	}
+	
 	public Vector2i worldCoordsToTileIndex(Vector2 coords)
 	{
 		int realIndexX, realIndexY;
 		
-		int xIndexIsh = realIndexX = (int) (coords.x / (0.75f * Tile.WIDTH));
-		int yIndexIsh = realIndexY = (int) (coords.y / Tile.HEIGHT);
+		int xIndexIsh = realIndexX = (int) (coords.x / (0.75f * Tile.DIMENSIONS));
+		int yIndexIsh = realIndexY = (int) (coords.y / Tile.DIMENSIONS);
 		
 		if(within(xIndexIsh, yIndexIsh))
 		{
@@ -118,114 +177,85 @@ public class GameMap
 	}
 	
 	public Tile getTile(int x, int y) { return tiles[y][x]; }
-	public Building getBuilding(int x, int y) { return buildings[y][x]; }
-	public Unit getUnit(int x, int y) { return units[y][x]; }
+	public Building getBuilding(int x, int y) { return getTile(x, y).getBuilding(); }
+	public Unit getUnit(int x, int y) { return getTile(x, y).getUnit(); }
 	
 	public Tile setTile(int x, int y, Tile t) { Tile temp = tiles[y][x]; tiles[y][x] = t; return temp;  }
-	public Building setBuilding(int x, int y, Building b) { Building temp = buildings[y][x]; buildings[y][x] = b; return temp; }
-	public Unit setUnit(int x, int y, Unit u) { Unit temp = units[y][x]; units[y][x] = u; return temp; }
+	public Building setBuilding(int x, int y, Building b) { Building temp = getBuilding(x, y); getTile(x, y).setBuilding(b); return temp; }
+	public Unit setUnit(int x, int y, Unit u) { Unit temp = getUnit(x, y); getTile(x, y).setUnit(u); return temp; }
 
 	public float getWidth() { return WIDTH * 0.75f + 0.25f; } // 0.75f because each hexagon is actually only 3/4 the width because of how they are layered, and + 0.25f because of the corner on the last row
-	public float getHeight() { return HEIGHT; } // +0.25 same reason
+	public float getHeight() { return HEIGHT; }
 
 	public Transform getBounds()
 	{
 		return new Transform(0, -0.25f, getWidth(), getHeight());
 	}
 	
-	public void drawShapes(FancyCamera cam, ShapeRenderer batch)
+	public void drawShapes(Vector2i[] drawBounds, ShapeRenderer batch)
 	{
-		for(int y = 0; y < HEIGHT; y++)
-		{
-			for(int x = 0; x < WIDTH; x++)
-			{
+		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
 				if(tiles[y][x] != null)
 					tiles[y][x].drawShapes(batch);
-				if(buildings[y][x] != null)
-					buildings[y][x].drawShapes(batch);
-				if(units[y][x] != null)
-					units[y][x].drawShapes(batch);
-			}
-		}
 	}
 
-	public void drawLines(FancyCamera cam, ShapeRenderer batch)
+	public void drawLines(Vector2i[] drawBounds, ShapeRenderer batch)
 	{
-		for(int y = 0; y < HEIGHT; y++)
-		{
-			for(int x = 0; x < WIDTH; x++)
-			{
+		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
 				if(tiles[y][x] != null)
 					tiles[y][x].drawLines(batch);
-				if(buildings[y][x] != null)
-					buildings[y][x].drawLines(batch);
-				if(units[y][x] != null)
-					units[y][x].drawLines(batch);
-			}
-		}
 	}
 
-	public void drawPolygons(FancyCamera cam, PolygonSpriteBatch batch)
+	public void drawPolygons(Vector2i[] drawBounds, PolygonSpriteBatch batch)
+	{
+		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
+				if(tiles[y][x] != null)
+					tiles[y][x].drawPolygons(batch);
+	}
+	
+	public void drawSprites(Vector2i[] drawBounds, SpriteBatch batch)
+	{
+		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
+				if(tiles[y][x] != null)
+					tiles[y][x].drawSprites(batch);
+	}
+	
+	public Vector2i[] getDrawBounds(FancyCamera cam)
 	{
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();
 		
-		Vector2i pos = worldCoordsToTileIndex(cam.getPosition2().cpy().sub(width / 2 + Tile.WIDTH / 4, height / 2 + Tile.HEIGHT / 2));
+		Vector2i pos = worldCoordsToTileIndex(cam.getPosition2().cpy().sub(width / 2 + Tile.DIMENSIONS / 4, height / 2 + Tile.DIMENSIONS / 2));
 		
-		float maxY = Math.min(getHeight(), pos.y + height / Tile.HEIGHT + 2);
-		float maxX = Math.min(getWidth() , pos.x + width / Tile.WIDTH + 0);
+		// + 2/3 accounts for edges
+		int maxY = (int) (pos.y + height / Tile.DIMENSIONS + 3);
+		int maxX = (int) (pos.x + width / (0.75f * Tile.DIMENSIONS) + 2);
 		
-		for(int y = pos.y; y < maxY; y++)
-		{
-			for(int x = pos.x; x < maxX; x++)
-			{
-				if(y != -1)
-				{
-					if(tiles[y][x] != null)
-						tiles[y][x].drawPolygons(batch);
-					if(buildings[y][x] != null)
-						buildings[y][x].drawPolygons(batch);
-					if(units[y][x] != null)
-						units[y][x].drawPolygons(batch);
-				}
-			}
-		}
-	}
-
-	public void drawSprites(FancyCamera cam, SpriteBatch batch)
-	{
-		Vector2i pos = worldCoordsToTileIndex(cam.getPosition2());
-		
-		for(int y = pos.y; y < HEIGHT; y++)
-		{
-			for(int x = pos.x; x < WIDTH; x++)
-			{
-				if(tiles[y][x] != null)
-					tiles[y][x].drawSprites(batch);
-				if(buildings[y][x] != null)
-					buildings[y][x].drawSprites(batch);
-				if(units[y][x] != null)
-					units[y][x].drawSprites(batch);
-			}
-		}
+		return new Vector2i[] { pos, new Vector2i(maxX, maxY) };
 	}
 
 	public void drawAll(FancyCamera cam, MasterBatch batch)
 	{
+		Vector2i[] drawBounds = getDrawBounds(cam);
+		
 		batch.getPolyBatch().begin();
-		drawPolygons(cam, batch.getPolyBatch());
+		drawPolygons(drawBounds, batch.getPolyBatch());
 		batch.getPolyBatch().end();
 		
 		batch.getSpriteBatch().begin();
-		drawSprites(cam, batch.getSpriteBatch());
+		drawSprites(drawBounds, batch.getSpriteBatch());
 		batch.getSpriteBatch().end();
 		
 		batch.getShapeBatch().begin(ShapeType.Filled);
-		drawShapes(cam, batch.getShapeBatch());
+		drawShapes(drawBounds, batch.getShapeBatch());
 		batch.getShapeBatch().end();
 		
 		batch.getShapeBatch().begin(ShapeType.Line);
-		drawLines(cam, batch.getShapeBatch());
+		drawLines(drawBounds, batch.getShapeBatch());
 		batch.getShapeBatch().end();
 	}
 }

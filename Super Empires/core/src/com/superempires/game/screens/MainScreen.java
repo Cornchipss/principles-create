@@ -24,7 +24,7 @@ public class MainScreen implements Screen
 	@Override
 	public void show()
 	{
-		cam.position.set(Gdx.graphics.getWidth() / 2, map.getHeight() * Tile.HEIGHT - Gdx.graphics.getHeight() / 2, 0);
+		cam.position.set(Gdx.graphics.getWidth() / 2, map.getHeight() * Tile.DIMENSIONS - Gdx.graphics.getHeight() / 2, 0);
 	}
 	
 	@Override

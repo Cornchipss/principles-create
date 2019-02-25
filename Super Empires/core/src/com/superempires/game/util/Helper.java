@@ -3,7 +3,7 @@ package com.superempires.game.util;
 import com.badlogic.gdx.math.Vector2;
 
 public class Helper
-{
+{	
 	public static int clamp(int v, int min, int max)
 	{
 		return v < min ? min : v > max ? max : v;
