@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.superempires.game.map.GameMap;
 import com.superempires.game.map.generation.MapGenerator;
+import com.superempires.game.map.tiling.ImpassableTile;
 import com.superempires.game.map.tiling.NormalTile;
 import com.superempires.game.map.tiling.QuickTile;
 import com.superempires.game.map.tiling.SlowTile;
@@ -27,9 +28,10 @@ public class MainScreen implements Screen
 	{
 		gen.registerTile(new QuickTile.QuickTileTemplate(), 20);
 		gen.registerTile(new SlowTile.SlowTileTemplate(), 20);
+		gen.registerTile(new ImpassableTile.ImpassableTileTemplate(), 20);
 		gen.registerTile(new NormalTile.NormalTileTemplate(), 100);
 		
-		map = new GameMap(200, 200, gen);
+		map = new GameMap(100, 100, gen);
 		
 		batch = new MasterBatch();
 	}

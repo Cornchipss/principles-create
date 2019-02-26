@@ -29,4 +29,10 @@ public class QuickTile extends Tile
 			return new QuickTile(x, y);
 		}
 	}
+
+	@Override
+	public boolean isWalkable()
+	{
+		return true;
+	}
 }

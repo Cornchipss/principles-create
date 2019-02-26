@@ -23,7 +23,10 @@ public class NormalTile extends Tile
 			return new NormalTile(x, y);
 		}
 	}
-	
+
 	@Override
-	public String toString() { return "hayt"; }
+	public boolean isWalkable()
+	{
+		return true;
+	}
 }

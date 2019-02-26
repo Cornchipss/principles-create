@@ -18,7 +18,7 @@ public class SlowTile extends Tile
 	@Override
 	public double getTravelTime()
 	{
-		return 5;
+		return 3;
 	}
 	
 	public static class SlowTileTemplate implements TileTemplate
@@ -28,5 +28,11 @@ public class SlowTile extends Tile
 		{
 			return new SlowTile(x, y);
 		}
+	}
+
+	@Override
+	public boolean isWalkable()
+	{
+		return true;
 	}
 }

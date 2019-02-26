@@ -31,6 +31,8 @@ public class GameMap
 	
 	private final Tile[][] tiles;
 	
+	private Tile[] selectedTiles = new Tile[0];
+	
 	private Tile hoveredTile, selectedTile;
 	
 	public GameMap(int w, int h, MapGenerator generator)
@@ -66,37 +68,54 @@ public class GameMap
 			if(within(index.x, index.y))
 			{
 				if(hoveredTile != null)
-					hoveredTile.setHighlighted(false);
-				
+				{
+					boolean highlight = true;
+					
+					for(Tile t : selectedTiles)
+					{
+						if(t.equals(hoveredTile))
+						{
+							highlight = false;
+							break;
+						}
+					}
+					
+					if(highlight)
+						hoveredTile.setHighlighted(false);
+				}
+					
 				hoveredTile = getTile(index.x, index.y);
 				
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 				{
-					final int RADIUS = 3;
+					final int RADIUS = 10;
 					
 					if(selectedTile != null)
 					{
 						selectedTile.setSelected(false);
-						Vector2i point = worldCoordsToTileIndex(selectedTile.getTransform().getCenter());
-//						for(Tile t : getAdjacentTiles(point.x, point.y, RADIUS))
-//							if(t != null)
-//								t.setHighlighted(false);
 						
-						Map<Tile, Path> paths = pathfindTiles(point.x, point.y, RADIUS);
-						
-						for(Tile t : paths.keySet())
+						for(Tile t : selectedTiles)
 						{
 							t.setHighlighted(false);
 						}
+						
+						selectedTiles = new Tile[0];
 					}
 					
 					(selectedTile = hoveredTile).setSelected(true);
 					
 					Map<Tile, Path> paths = pathfindTiles(index.x, index.y, RADIUS);
 					
+					selectedTiles = new Tile[paths.size()];
+					
+					int i = 0;
+					
 					for(Tile t : paths.keySet())
 					{
 						t.setHighlighted(true);
+						
+						selectedTiles[i] = t;
+						i++;
 					}
 				}
 				else
@@ -142,7 +161,7 @@ public class GameMap
 					
 					for(Tile tile : tiles)
 					{
-						if(tile != null)
+						if(tile != null && tile.isWalkable())
 						{
 							double newTime = path.getTravelTime() + tile.getTravelTime();
 							

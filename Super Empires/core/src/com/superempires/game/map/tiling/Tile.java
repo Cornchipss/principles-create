@@ -22,8 +22,8 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	{
 		GameRegistry.registerTexture("tile-default", "tiles/grass.png");
 	}
-	
-	public static final float DIMENSIONS = 64 * 2;
+
+	public static final float DIMENSIONS = 32;
 	
 	private static final float[] vertices = new float[]
 	{
@@ -32,7 +32,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		DIMENSIONS        , DIMENSIONS / 2,
 		DIMENSIONS * 3 / 4, DIMENSIONS    ,
 		DIMENSIONS     / 4, DIMENSIONS    ,
-		0                      , DIMENSIONS / 2,
+		0                 , DIMENSIONS / 2,
 		DIMENSIONS     / 4, 0 // This last one is for line drawing
 	};
 	
@@ -140,4 +140,6 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	public void setUnit(Unit unit) { this.unit = unit; }
 
 	public abstract double getTravelTime();
+
+	public abstract boolean isWalkable();
 }
