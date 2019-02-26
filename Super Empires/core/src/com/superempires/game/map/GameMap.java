@@ -1,5 +1,12 @@
 package com.superempires.game.map;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
@@ -8,6 +15,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.buildings.Building;
+import com.superempires.game.map.pathing.Path;
+import com.superempires.game.map.tiling.TestTile;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.map.troops.Unit;
 import com.superempires.game.objects.properties.Transform;
@@ -37,10 +46,13 @@ public class GameMap
 			{
 				boolean odd = x % 2 != 0;
 				
-				float xPos = x * 4f / 4 * Tile.DIMENSIONS - (Tile.DIMENSIONS / 4f * x);
+				float xPos = x * 0.75f * Tile.DIMENSIONS;
 				float yPos = y * Tile.DIMENSIONS - (odd ? Tile.DIMENSIONS / 2 : 0);
 				
-				tiles[y][x] = new Tile(xPos, yPos);
+				if(Math.random() < 0.1)
+					tiles[y][x] = new TestTile(xPos, yPos);
+				else
+					tiles[y][x] = new Tile(xPos, yPos);
 			}
 		}
 	}
@@ -76,22 +88,32 @@ public class GameMap
 				
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 				{
-					final int RADIUS = 5;
+					final int RADIUS = 3;
 					
 					if(selectedTile != null)
 					{
 						selectedTile.setSelected(false);
 						Vector2i point = worldCoordsToTileIndex(selectedTile.getTransform().getCenter());
-						for(Tile t : getAdjacentTiles(point.x, point.y, RADIUS))
-							if(t != null)
-								t.setHighlighted(false);
+//						for(Tile t : getAdjacentTiles(point.x, point.y, RADIUS))
+//							if(t != null)
+//								t.setHighlighted(false);
+						
+						Map<Tile, Path> paths = pathfindTiles(point.x, point.y, RADIUS);
+						
+						for(Tile t : paths.keySet())
+						{
+							t.setHighlighted(false);
+						}
 					}
 					
 					(selectedTile = hoveredTile).setSelected(true);
 					
-					for(Tile t : getAdjacentTiles(index.x, index.y, RADIUS))
-						if(t != null)
-							t.setHighlighted(true);
+					Map<Tile, Path> paths = pathfindTiles(index.x, index.y, RADIUS);
+					
+					for(Tile t : paths.keySet())
+					{
+						t.setHighlighted(true);
+					}
 				}
 				else
 					hoveredTile.setHighlighted(true);
@@ -104,6 +126,78 @@ public class GameMap
 		return indexX >= 0 && indexX < WIDTH && indexY >= 0 && indexY < HEIGHT;
 	}
 	
+	/**
+	 * Finds a bunch of tiles in a circleish thing
+	 * @param indexX
+	 * @param indexY
+	 * @param walkTime
+	 */
+	public Map<Tile, Path> pathfindTiles(int indexX, int indexY, double walkTime)
+	{
+		Map<Tile, Path> paths = new HashMap<>();
+		List<Path> currentPaths = new ArrayList<>();
+		
+		Tile firstTile = getTile(indexX, indexY);
+		Path first = new Path(firstTile, 0);
+		
+		currentPaths.add(first);
+		
+		while(currentPaths.size() != 0)
+		{
+			Set<Path> deadPaths = new HashSet<>();
+			
+			List<Path> newPaths = new ArrayList<>();
+			
+			for(Path path : currentPaths)
+			{
+				if(!deadPaths.contains(path))
+				{
+					Vector2i index = getTileIndex(path.getTile());
+					
+					Tile[] tiles = getAdjacentTiles(index.x, index.y, 1);
+					
+					for(Tile tile : tiles)
+					{
+						if(tile != null)
+						{
+							double newTime = path.getTravelTime() + tile.getTravelTime();
+							
+							if(newTime <= walkTime)
+							{
+								if(!paths.containsKey(tile))
+								{
+									Path child = path.giveBirth(tile, newTime);
+									newPaths.add(child);
+									
+									paths.put(tile, child);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			currentPaths = newPaths;
+		}
+		
+		return paths;
+	}
+	
+	private Vector2i getTileIndex(Tile tile)
+	{
+		return new Vector2i(
+				(int) (tile.getTransform().getCenter().x / (0.75f * Tile.DIMENSIONS)), 
+				(int) (tile.getTransform().getCenter().y / Tile.DIMENSIONS));
+	}
+	
+	/**
+	 * Gets adjacent tiles in a semi-quick manner
+	 * This only works 100% if the radius is 3 or below.
+	 * @param indexX The index x to check around
+	 * @param indexY The index y to check around
+	 * @param radius The radius of the search (best if 3 or below)
+	 * @return The tiles in an array that are surrounding said index.
+	 */
 	public Tile[] getAdjacentTiles(int indexX, int indexY, int radius)
 	{		
 		int tiles = 0;

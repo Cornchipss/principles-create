@@ -23,9 +23,7 @@ public class Tile extends PhysicalObject implements IDrawable
 		GameRegistry.registerTexture("tile", "tiles/grass.png");
 	}
 	
-	private Texture texture = GameRegistry.getTexture("tile");
-	
-	public static final float DIMENSIONS = 20 * 2;
+	public static final float DIMENSIONS = 64 * 2;
 	
 	private static final float[] vertices = new float[]
 	{
@@ -55,7 +53,7 @@ public class Tile extends PhysicalObject implements IDrawable
 	private Building building;
 	private Unit unit;
 	
-	public Tile(float x, float y)
+	public Tile(float x, float y, Texture texture)
 	{
 		super(x, y);
 		
@@ -67,6 +65,11 @@ public class Tile extends PhysicalObject implements IDrawable
 		
 		setHighlighted(false);
 		setSelected(false);
+	}
+	
+	public Tile(float x, float y)
+	{
+		this(x, y, GameRegistry.getTexture("tile"));
 	}
 	
 	@Override
@@ -136,4 +139,9 @@ public class Tile extends PhysicalObject implements IDrawable
 
 	public Unit getUnit() { return unit; }
 	public void setUnit(Unit unit) { this.unit = unit; }
+
+	public double getTravelTime()
+	{
+		return 1;
+	}
 }
