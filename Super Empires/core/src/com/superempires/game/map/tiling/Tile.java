@@ -16,18 +16,17 @@ import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.render.IDrawable;
 import com.superempires.game.util.Colors;
 
-public class Tile extends PhysicalObject implements IDrawable
+public abstract class Tile extends PhysicalObject implements IDrawable
 {
 	static
 	{
-		GameRegistry.registerTexture("tile", "tiles/grass.png");
+		GameRegistry.registerTexture("tile-default", "tiles/grass.png");
 	}
 	
 	public static final float DIMENSIONS = 64 * 2;
 	
 	private static final float[] vertices = new float[]
 	{
-		// 4/5 and 1/5 are the best ratios for making good hexagons I've found	
 		DIMENSIONS     / 4, 0,
 		DIMENSIONS * 3 / 4, 0,
 		DIMENSIONS        , DIMENSIONS / 2,
@@ -69,7 +68,7 @@ public class Tile extends PhysicalObject implements IDrawable
 	
 	public Tile(float x, float y)
 	{
-		this(x, y, GameRegistry.getTexture("tile"));
+		this(x, y, GameRegistry.getTexture("tile-default"));
 	}
 	
 	@Override
@@ -140,8 +139,5 @@ public class Tile extends PhysicalObject implements IDrawable
 	public Unit getUnit() { return unit; }
 	public void setUnit(Unit unit) { this.unit = unit; }
 
-	public double getTravelTime()
-	{
-		return 1;
-	}
+	public abstract double getTravelTime();
 }
