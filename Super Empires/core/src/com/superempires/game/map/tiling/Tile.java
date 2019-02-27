@@ -23,7 +23,10 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		GameRegistry.registerTexture("tile-default", "tiles/grass.png");
 	}
 
-	public static final float DIMENSIONS = 32;
+	/**
+	 * Dimensions (width & height) of each tile in pixels
+	 */
+	public static final float DIMENSIONS = 64;
 	
 	private static final float[] vertices = new float[]
 	{
@@ -52,9 +55,15 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	private Building building;
 	private Unit unit;
 	
+	/**
+	 * Creates a fancy tile
+	 * @param x Index X
+	 * @param y Index Y
+	 * @param texture Texture to render
+	 */
 	public Tile(float x, float y, Texture texture)
 	{
-		super(x, y);
+		super(x * 0.75f * Tile.DIMENSIONS, y * Tile.DIMENSIONS - (x % 2) * Tile.DIMENSIONS / 2);
 		
 		PolygonRegion polyReg = new PolygonRegion(new TextureRegion(texture), vertices, indicies);
 		
@@ -139,7 +148,18 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	public Unit getUnit() { return unit; }
 	public void setUnit(Unit unit) { this.unit = unit; }
 
+	/**
+	 * The "time" it takes to travel on this tile
+	 * 1 is a normal amount of time
+	 * 0.5 is a path
+	 * 3 is a slow tile
+	 * @return
+	 */
 	public abstract double getTravelTime();
 
+	/**
+	 * Can the tile be walked on
+	 * @return true if it can be walked on, false if not
+	 */
 	public abstract boolean isWalkable();
 }
