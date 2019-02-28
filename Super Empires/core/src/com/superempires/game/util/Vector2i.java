@@ -40,4 +40,16 @@ public class Vector2i
 	{
 		return new Vector2i(x, y);
 	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		if(other instanceof Vector2i)
+		{
+			Vector2i v = (Vector2i)other;
+			
+			return x == v.x && y == v.y;
+		}
+		return false;
+	}
 }

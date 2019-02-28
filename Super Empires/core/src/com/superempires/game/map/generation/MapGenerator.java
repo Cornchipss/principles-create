@@ -1,11 +1,14 @@
 package com.superempires.game.map.generation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.util.Vector2i;
 
 public class MapGenerator
 {
@@ -27,16 +30,49 @@ public class MapGenerator
 		
 		Tile[][] tiles = new Tile[HEIGHT][WIDTH];
 		
+		Map<Vector2i, Biome> biomeCoords = new HashMap<>();
+		
+		Biome curBiome = null;
+		
+		int biomeX = 0;
+		int biomeY = 0;
+		
+		int biomeMaxX = rdm.nextInt(100) + 50;
+		int biomeMaxY = rdm.nextInt(100) + 50;
+		
 		for(int y = 0; y < HEIGHT; y++)
 		{
+			int biomeRandomX = 0;
+			
 			for(int x = 0; x < WIDTH; x++)
 			{
 				double temperature = calculateTemperature(y, HEIGHT, rdm);
 				
-				Biome best = findBestBiome(temperature, rdm);
+				Vector2i coord = new Vector2i(x, y);
 				
-				best.generateTile(tiles, x, y, temperature);
+				boolean combined = biomeCoords.containsKey(coord);
+				
+				if(biomeX > biomeMaxX + biomeRandomX || (curBiome == null || combined))
+				{
+					if(!combined)
+						curBiome = findBestBiome(temperature, rdm);
+					else
+						curBiome = biomeCoords.get(coord);
+					
+					biomeCoords.put(coord, curBiome);
+					
+					biomeX = 0;
+				}
+				
+				biomeX++;
+				
+				curBiome.generateTile(tiles, x, y, temperature);
 			}
+			
+			
+			System.out.println(biomeX);
+			
+			biomeX = 0;
 		}
 		
 		return tiles;
@@ -49,6 +85,19 @@ public class MapGenerator
 		double min = (closer * 47.0 / worldHeight - 4.5) * 5.3 + 0.5;
 		
 		return rdm.nextDouble() * 4 + min;
+	}
+	
+	protected List<Biome> findOkBiomes(double temperature)
+	{
+		List<Biome> goodBiomes = new ArrayList<>();
+		
+		for(Biome b : biomes)
+		{
+			if(b.isAcceptableTemperature(temperature))
+				goodBiomes.add(b);
+		}
+		
+		return goodBiomes;
 	}
 	
 	protected Biome findBestBiome(double temperature, Random rdm)
