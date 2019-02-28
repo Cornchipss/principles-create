@@ -9,20 +9,15 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.map.troops.Unit;
 import com.superempires.game.objects.PhysicalObject;
-import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.render.IDrawable;
 import com.superempires.game.util.Colors;
 
 public abstract class Tile extends PhysicalObject implements IDrawable
 {
-	static
-	{
-		GameRegistry.registerTexture("tile-default", "tiles/grass.png");
-	}
-
 	/**
 	 * Dimensions (width & height) of each tile in pixels
 	 */
@@ -55,15 +50,20 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	private Building building;
 	private Unit unit;
 	
+	private double temperature;
+	private Biome biome;
+	
 	/**
 	 * Creates a fancy tile
 	 * @param x Index X
 	 * @param y Index Y
 	 * @param texture Texture to render
 	 */
-	public Tile(float x, float y, Texture texture)
+	public Tile(float x, float y, double temperature, Texture texture, Biome biome)
 	{
 		super(x * 0.75f * Tile.DIMENSIONS, y * Tile.DIMENSIONS - (x % 2) * Tile.DIMENSIONS / 2);
+		this.temperature = temperature;
+		this.biome = biome;
 		
 		PolygonRegion polyReg = new PolygonRegion(new TextureRegion(texture), vertices, indicies);
 		
@@ -73,11 +73,6 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		
 		setHighlighted(false);
 		setSelected(false);
-	}
-	
-	public Tile(float x, float y)
-	{
-		this(x, y, GameRegistry.getTexture("tile-default"));
 	}
 	
 	@Override
@@ -119,14 +114,9 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		selected = s;
 		
 		if(s)
-			polygonSprite.setColor(Colors.CLEAR_SHADING);
+			polygonSprite.setColor(Colors.mixShading(biome.getShadingColor(), Colors.CLEAR_SHADING));
 		else
-		{
-			if(highlighted)
-				polygonSprite.setColor(Colors.SEMI_GREY_SHADING);
-			else
-				polygonSprite.setColor(Colors.GREY_SHADING);
-		}
+			setHighlighted(highlighted);
 	}
 	
 	public void setHighlighted(boolean h)
@@ -136,9 +126,9 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		if(!selected) // Selected takes prescidence over highlighting
 		{
 			if(h)
-				polygonSprite.setColor(Colors.SEMI_GREY_SHADING);
+				polygonSprite.setColor(Colors.mixShading(biome.getShadingColor(), Colors.SEMI_GREY_SHADING));
 			else
-				polygonSprite.setColor(Colors.GREY_SHADING);
+				polygonSprite.setColor(Colors.mixShading(biome.getShadingColor(), Colors.GREY_SHADING));
 		}
 	}
 
@@ -147,13 +137,17 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 
 	public Unit getUnit() { return unit; }
 	public void setUnit(Unit unit) { this.unit = unit; }
+	
+	public Biome getBiome() { return biome; }
+	
+	public double getTemperature() { return temperature; }
 
 	/**
 	 * The "time" it takes to travel on this tile
 	 * 1 is a normal amount of time
 	 * 0.5 is a path
 	 * 3 is a slow tile
-	 * @return
+	 * @return the time
 	 */
 	public abstract double getTravelTime();
 

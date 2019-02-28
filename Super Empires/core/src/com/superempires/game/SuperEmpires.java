@@ -6,7 +6,7 @@ import com.superempires.game.screens.MainScreen;
 public class SuperEmpires extends Game
 {
 	@Override
-	public void create ()
+	public void create()
 	{
 		setScreen(new MainScreen());
 	}

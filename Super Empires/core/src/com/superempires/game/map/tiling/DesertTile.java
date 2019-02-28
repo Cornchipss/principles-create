@@ -1,6 +1,6 @@
 package com.superempires.game.map.tiling;
 
-import com.superempires.game.map.tiling.template.TileTemplate;
+import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
 public class DesertTile extends Tile
@@ -10,20 +10,11 @@ public class DesertTile extends Tile
 		GameRegistry.registerTexture("tile-desert", "tiles/tile-sand.png");
 	}
 	
-	public DesertTile(float x, float y)
+	public DesertTile(float x, float y, double temperature, Biome biome)
 	{
-		super(x, y, GameRegistry.getTexture("tile-desert"));
+		super(x, y, temperature, GameRegistry.getTexture("tile-desert"), biome);
 	}
 	
-	public static class DesertTileTemplate implements TileTemplate
-	{
-		@Override
-		public Tile createTile(float x, float y)
-		{
-			return new DesertTile(x, y);
-		}
-	}
-
 	@Override
 	public boolean isWalkable()
 	{

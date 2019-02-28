@@ -1,6 +1,6 @@
 package com.superempires.game.map.tiling;
 
-import com.superempires.game.map.tiling.template.TileTemplate;
+import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
 public class PlainsTile extends Tile
@@ -10,18 +10,9 @@ public class PlainsTile extends Tile
 		GameRegistry.registerTexture("tile-grass", "tiles/tile-grass.png");
 	}
 	
-	public PlainsTile(float x, float y)
+	public PlainsTile(float x, float y, double temperature, Biome biome)
 	{
-		super(x, y, GameRegistry.getTexture("tile-grass"));
-	}
-	
-	public static class PlainsTileTemplate implements TileTemplate
-	{
-		@Override
-		public Tile createTile(float x, float y)
-		{
-			return new PlainsTile(x, y);
-		}
+		super(x, y, temperature, GameRegistry.getTexture("tile-grass"), biome);
 	}
 
 	@Override

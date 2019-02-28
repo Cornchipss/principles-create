@@ -5,6 +5,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.superempires.game.map.GameMap;
+import com.superempires.game.map.biome.ColdPlainsBiome;
+import com.superempires.game.map.biome.CragBiome;
+import com.superempires.game.map.biome.DesertBiome;
+import com.superempires.game.map.biome.HotPlainsBiome;
+import com.superempires.game.map.biome.PlainsBiome;
+import com.superempires.game.map.biome.SnowBiome;
 import com.superempires.game.map.generation.MapGenerator;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.render.FancyCamera;
@@ -22,7 +28,14 @@ public class MainScreen implements Screen
 	
 	public MainScreen()
 	{
-		map = new GameMap(100, 100, gen);
+		gen.registerBiome(new PlainsBiome());
+		gen.registerBiome(new DesertBiome());
+		gen.registerBiome(new SnowBiome());
+		gen.registerBiome(new HotPlainsBiome());
+		gen.registerBiome(new CragBiome());
+		gen.registerBiome(new ColdPlainsBiome());
+		
+		map = new GameMap(1000, 1000, gen);
 		
 		batch = new MasterBatch();
 	}

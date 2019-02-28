@@ -1,16 +1,15 @@
 package com.superempires.game.map.biome;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.tiling.DesertTile;
 import com.superempires.game.map.tiling.Tile;
 
 public class DesertBiome extends Biome
 {
 	@Override
-	public void generateTile(Tile[][] tiles, int x, int y)
+	public void generateTile(Tile[][] tiles, int x, int y, double temperature)
 	{
-		tiles[y][x] = new DesertTile(x, y);
+		tiles[y][x] = new DesertTile(x, y, temperature, this);
 	}
 
 	@Override
@@ -18,21 +17,9 @@ public class DesertBiome extends Biome
 	{
 		return Color.WHITE;
 	}
-
+	
 	@Override
-	public Vector2 getAverageTemperatureRange()
-	{
-		return new Vector2(90, 130);
-	}
-
-	@Override
-	public Vector2 getAverageHumidityRange()
-	{
-		return new Vector2(0, 30);
-	}
-
-	@Override
-	public float getRarity()
+	public int getRarity()
 	{
 		return 100;
 	}
@@ -41,5 +28,11 @@ public class DesertBiome extends Biome
 	public float getPreferredAverageTemperature()
 	{
 		return 100;
+	}
+
+	@Override
+	public boolean isAcceptableTemperature(double temperature)
+	{
+		return 90 <= temperature && temperature <= 130;
 	}
 }

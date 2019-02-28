@@ -1,16 +1,15 @@
 package com.superempires.game.map.biome;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.tiling.SnowTile;
 import com.superempires.game.map.tiling.Tile;
 
 public class SnowBiome extends Biome
 {
 	@Override
-	public void generateTile(Tile[][] tiles, int x, int y)
+	public void generateTile(Tile[][] tiles, int x, int y, double temperature)
 	{
-		tiles[y][x] = new SnowTile(x, y);
+		tiles[y][x] = new SnowTile(x, y, temperature, this);
 	}
 
 	@Override
@@ -18,21 +17,9 @@ public class SnowBiome extends Biome
 	{
 		return Color.WHITE;
 	}
-
+	
 	@Override
-	public Vector2 getAverageTemperatureRange()
-	{
-		return new Vector2(-Biome.MIN_AVERAGE_TEMPERATURE, 32);
-	}
-
-	@Override
-	public Vector2 getAverageHumidityRange()
-	{
-		return new Vector2(40, 100);
-	}
-
-	@Override
-	public float getRarity()
+	public int getRarity()
 	{
 		return 100;
 	}
@@ -42,4 +29,13 @@ public class SnowBiome extends Biome
 	{
 		return 10;
 	}
+
+	@Override
+	public boolean isAcceptableTemperature(double temperature)
+	{
+		return temperature <= 32;
+	}
+	
+	@Override
+	public String toString() { return "Snow Biome @ " + hashCode(); }
 }

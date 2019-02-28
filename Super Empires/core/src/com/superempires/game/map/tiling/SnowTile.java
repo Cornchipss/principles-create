@@ -1,6 +1,6 @@
 package com.superempires.game.map.tiling;
 
-import com.superempires.game.map.tiling.template.TileTemplate;
+import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
 public class SnowTile extends Tile
@@ -10,20 +10,11 @@ public class SnowTile extends Tile
 		GameRegistry.registerTexture("tile-snow", "tiles/tile-snow.png");
 	}
 	
-	public SnowTile(float x, float y)
+	public SnowTile(float x, float y, double temperature, Biome biome)
 	{
-		super(x, y, GameRegistry.getTexture("tile-snow"));
+		super(x, y, temperature, GameRegistry.getTexture("tile-snow"), biome);
 	}
 	
-	public static class SnowTileTemplate implements TileTemplate
-	{
-		@Override
-		public Tile createTile(float x, float y)
-		{
-			return new SnowTile(x, y);
-		}
-	}
-
 	@Override
 	public boolean isWalkable()
 	{

@@ -1,15 +1,15 @@
 package com.superempires.game.map.biome;
 
 import com.badlogic.gdx.graphics.Color;
-import com.superempires.game.map.tiling.PlainsTile;
+import com.superempires.game.map.tiling.CragTile;
 import com.superempires.game.map.tiling.Tile;
 
-public class PlainsBiome extends Biome
+public class CragBiome extends Biome
 {
 	@Override
 	public void generateTile(Tile[][] tiles, int x, int y, double temperature)
 	{
-		tiles[y][x] = new PlainsTile(x, y, temperature, this);
+		tiles[y][x] = new CragTile(x, y, temperature, this);
 	}
 
 	@Override
@@ -17,7 +17,13 @@ public class PlainsBiome extends Biome
 	{
 		return Color.WHITE;
 	}
-	
+
+	@Override
+	public float getPreferredAverageTemperature()
+	{
+		return 100;
+	}
+
 	@Override
 	public int getRarity()
 	{
@@ -25,14 +31,9 @@ public class PlainsBiome extends Biome
 	}
 
 	@Override
-	public float getPreferredAverageTemperature()
-	{
-		return 80;
-	}
-
-	@Override
 	public boolean isAcceptableTemperature(double temperature)
 	{
-		return 60 <= temperature && temperature <= 90;
+		return temperature >= 100;
 	}
+
 }
