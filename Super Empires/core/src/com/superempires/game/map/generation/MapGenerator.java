@@ -26,11 +26,15 @@ public class MapGenerator
 	
 	public Tile[][] generateMap(final int WIDTH, final int HEIGHT)
 	{
+		System.out.println("GENERATING WORLD");
+		
 		Random rdm = new Random();
 		
 		Tile[][] tiles = new Tile[HEIGHT][WIDTH];
 		
-		int amt = (WIDTH * HEIGHT) / 1000;
+		System.out.println("PLANTING BIOMES");
+		
+		int amt = (WIDTH * HEIGHT) / 5000;
 		if(amt == 0)
 			amt = 1;
 		
@@ -39,10 +43,12 @@ public class MapGenerator
 		
 		for(int i = 0; i < amt; i++)
 		{
-			boolean found = false;
+			boolean found;
 			
 			do
 			{
+				found = false;
+				
 				biomeCoords[i] = new Vector2i(rdm.nextInt(WIDTH), rdm.nextInt(HEIGHT));
 				
 				for(int j = 0; j < i; j++)
@@ -53,44 +59,39 @@ public class MapGenerator
 						break;
 					}
 				}
+				
+				System.out.println((i + 1) + " / " + amt + " planted!");
 			}
 			while(found);
 			
 			double temperature = calculateTemperature(biomeCoords[i].y, HEIGHT, rdm);
 			
 			generatedBiomes[i] = findBestBiome(temperature, rdm);
-			
-//			biomes[i].generateTile(tiles, biomeCoords[i].x, biomeCoords[i].y, temperature);
 		}
+		
+		System.out.println("FILLING BIOMES");
 		
 		for(int y = 0; y < HEIGHT; y++)
 		{
 			for(int x = 0; x < WIDTH; x++)
 			{
-				Biome closest = null;
-				double closestDist = 0;
-				
 				Vector2 here = new Vector2(x, y);
+				
+				Biome closest = generatedBiomes[0];
+				double closestDist = Helper.distanceSquared(biomeCoords[0].asVector2(), here);
 				
 				double temperature = calculateTemperature(y, HEIGHT, rdm);
 				
-				for(int i = 0; i < generatedBiomes.length; i++)
+				for(int i = 1; i < amt; i++)
 				{
 					if(generatedBiomes[i].isAcceptableTemperature(temperature))
 					{
-						if(closest == null)
+						double dist = Helper.distanceSquared(biomeCoords[i].asVector2(), here);
+						
+						if(dist < closestDist)
 						{
 							closest = generatedBiomes[i];
-						}
-						else
-						{
-							double dist = Helper.distanceSquared(biomeCoords[i].asVector2(), here);
-							
-							if(dist < closestDist)
-							{
-								closest = generatedBiomes[i];
-								closestDist = dist;
-							}
+							closestDist = dist;
 						}
 					}
 				}
@@ -101,8 +102,10 @@ public class MapGenerator
 				closest.generateTile(tiles, x, y, temperature);
 			}
 			
-			System.out.println(y + " / " + HEIGHT);
+			System.out.println("BIOME GENERATION PROGRESS: " + (y + 1) + " / " + HEIGHT);
 		}
+		
+		System.out.println("WORLD GENERATION COMPLETE");
 		
 		return tiles;
 	}
