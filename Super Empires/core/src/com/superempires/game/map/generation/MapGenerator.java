@@ -1,13 +1,13 @@
 package com.superempires.game.map.generation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
+import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.util.Helper;
 import com.superempires.game.util.Vector2i;
 
 public class MapGenerator
@@ -30,49 +30,78 @@ public class MapGenerator
 		
 		Tile[][] tiles = new Tile[HEIGHT][WIDTH];
 		
-		Map<Vector2i, Biome> biomeCoords = new HashMap<>();
+		int amt = (WIDTH * HEIGHT) / 1000;
+		if(amt == 0)
+			amt = 1;
 		
-		Biome curBiome = null;
+		Vector2i[] biomeCoords = new Vector2i[amt];
+		Biome[] generatedBiomes = new Biome[amt];
 		
-		int biomeX = 0;
-		int biomeY = 0;
-		
-		int biomeMaxX = rdm.nextInt(100) + 50;
-		int biomeMaxY = rdm.nextInt(100) + 50;
+		for(int i = 0; i < amt; i++)
+		{
+			boolean found = false;
+			
+			do
+			{
+				biomeCoords[i] = new Vector2i(rdm.nextInt(WIDTH), rdm.nextInt(HEIGHT));
+				
+				for(int j = 0; j < i; j++)
+				{
+					if(biomeCoords[j].equals(biomeCoords[i]))
+					{
+						found = true;
+						break;
+					}
+				}
+			}
+			while(found);
+			
+			double temperature = calculateTemperature(biomeCoords[i].y, HEIGHT, rdm);
+			
+			generatedBiomes[i] = findBestBiome(temperature, rdm);
+			
+//			biomes[i].generateTile(tiles, biomeCoords[i].x, biomeCoords[i].y, temperature);
+		}
 		
 		for(int y = 0; y < HEIGHT; y++)
 		{
-			int biomeRandomX = 0;
-			
 			for(int x = 0; x < WIDTH; x++)
 			{
+				Biome closest = null;
+				double closestDist = 0;
+				
+				Vector2 here = new Vector2(x, y);
+				
 				double temperature = calculateTemperature(y, HEIGHT, rdm);
 				
-				Vector2i coord = new Vector2i(x, y);
-				
-				boolean combined = biomeCoords.containsKey(coord);
-				
-				if(biomeX > biomeMaxX + biomeRandomX || (curBiome == null || combined))
+				for(int i = 0; i < generatedBiomes.length; i++)
 				{
-					if(!combined)
-						curBiome = findBestBiome(temperature, rdm);
-					else
-						curBiome = biomeCoords.get(coord);
-					
-					biomeCoords.put(coord, curBiome);
-					
-					biomeX = 0;
+					if(generatedBiomes[i].isAcceptableTemperature(temperature))
+					{
+						if(closest == null)
+						{
+							closest = generatedBiomes[i];
+						}
+						else
+						{
+							double dist = Helper.distanceSquared(biomeCoords[i].asVector2(), here);
+							
+							if(dist < closestDist)
+							{
+								closest = generatedBiomes[i];
+								closestDist = dist;
+							}
+						}
+					}
 				}
 				
-				biomeX++;
+				if(closest == null)
+					throw new IllegalStateException("NOT ENOUGH BIOMES TO PROPERLY FILL MAP WITH TEMPERATURES!");
 				
-				curBiome.generateTile(tiles, x, y, temperature);
+				closest.generateTile(tiles, x, y, temperature);
 			}
 			
-			
-			System.out.println(biomeX);
-			
-			biomeX = 0;
+			System.out.println(y + " / " + HEIGHT);
 		}
 		
 		return tiles;

@@ -35,7 +35,7 @@ public class MainScreen implements Screen
 		gen.registerBiome(new CragBiome());
 		gen.registerBiome(new ColdPlainsBiome());
 		
-		map = new GameMap(500, 100, gen);
+		map = new GameMap(400, 400, gen);
 		
 		batch = new MasterBatch();
 	}
