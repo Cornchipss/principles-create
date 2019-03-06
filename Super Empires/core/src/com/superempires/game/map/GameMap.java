@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.buildings.Building;
-import com.superempires.game.map.generation.MapGenerator;
 import com.superempires.game.map.pathing.Path;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.map.troops.Unit;
@@ -35,12 +34,12 @@ public class GameMap
 	
 	private Tile hoveredTile, selectedTile;
 	
-	public GameMap(int w, int h, MapGenerator generator)
+	public GameMap(Tile[][] tiles)
 	{
-		WIDTH = w;
-		HEIGHT = h;
+		WIDTH = tiles[0].length;
+		HEIGHT = tiles.length;
 		
-		tiles = generator.generateMap(WIDTH, HEIGHT);
+		this.tiles = tiles;
 	}
 	
 	public void update(FancyCamera cam, float delta)

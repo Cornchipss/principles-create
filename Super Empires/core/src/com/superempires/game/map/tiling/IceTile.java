@@ -3,17 +3,17 @@ package com.superempires.game.map.tiling;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
-public class CragTile extends Tile
+public class IceTile extends Tile
 {
-	public CragTile(float x, float y, double temperature, Biome biome)
+	public IceTile(float x, float y, double temperature, Biome biome)
 	{
-		super(x, y, temperature, GameRegistry.getTexture("tile-crag"), biome);
+		super(x, y, temperature, GameRegistry.getTexture("tile-ice"), biome);
 	}
 
 	@Override
 	public double getTravelTime()
 	{
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -27,5 +27,4 @@ public class CragTile extends Tile
 	{
 		return false;
 	}
-
 }

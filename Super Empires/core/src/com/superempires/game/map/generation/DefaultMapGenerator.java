@@ -1,38 +1,58 @@
 package com.superempires.game.map.generation;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.biome.Biome;
+import com.superempires.game.map.biome.BiomeType;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.screens.WorldGenerationScreen;
 import com.superempires.game.util.Helper;
 import com.superempires.game.util.Vector2i;
 
-public class MapGenerator
+public class DefaultMapGenerator
 {
 	private List<Biome> biomes = new ArrayList<>();
+	private Map<BiomeType, List<Biome>> types = new HashMap<>();
+	
+	private WorldGenerationScreen screen;
+	
+	public DefaultMapGenerator(WorldGenerationScreen screen)
+	{
+		this.screen = screen;
+	}
 	
 	/**
 	 * Registers a tile template
 	 * @param template The template
 	 * @param odds The odds of the tile generating (not a percentage) - 1 is super small, 100 is highest
 	 */
-	public void registerBiome(Biome b)
+	public void registerBiome(Biome b, BiomeType type)
 	{
 		biomes.add(b);
+		
+		if(types.containsKey(type))
+			types.get(type).add(b);
+		else
+		{
+			List<Biome> biomes = new ArrayList<>();
+			biomes.add(b);
+			types.put(type, biomes);
+		}
 	}
 	
-	public Tile[][] generateMap(final int WIDTH, final int HEIGHT)
+	public Tile[][] generateMap(final Tile[][] tiles, long seed)
 	{
-		System.out.println("GENERATING WORLD");
+		Random rdm = new Random(seed);
 		
-		Random rdm = new Random();
+		final int WIDTH = tiles[0].length;
+		final int HEIGHT = tiles.length;
 		
-		Tile[][] tiles = new Tile[HEIGHT][WIDTH];
-		
-		System.out.println("PLANTING BIOMES");
+		screen.setText("Planting Biomes");
 		
 		int amt = (WIDTH * HEIGHT) / 5000;
 		if(amt == 0)
@@ -60,7 +80,7 @@ public class MapGenerator
 					}
 				}
 				
-				System.out.println((i + 1) + " / " + amt + " planted!");
+				screen.setSubText((i + 1) + " / " + amt + " planted!");
 			}
 			while(found);
 			
@@ -69,7 +89,7 @@ public class MapGenerator
 			generatedBiomes[i] = findBestBiome(temperature, rdm);
 		}
 		
-		System.out.println("FILLING BIOMES");
+		screen.setText("Filling Biomes");
 		
 		for(int y = 0; y < HEIGHT; y++)
 		{
@@ -99,13 +119,13 @@ public class MapGenerator
 				if(closest == null)
 					throw new IllegalStateException("NOT ENOUGH BIOMES TO PROPERLY FILL MAP WITH TEMPERATURES!");
 				
-				closest.generateTile(tiles, x, y, temperature);
+				closest.generateTile(tiles, x, y, temperature, rdm);
 			}
 			
-			System.out.println("BIOME GENERATION PROGRESS: " + (y + 1) + " / " + HEIGHT);
+			screen.setSubText("BIOME GENERATION PROGRESS: " + (y + 1) + " / " + HEIGHT);
 		}
 		
-		System.out.println("WORLD GENERATION COMPLETE");
+		screen.setText("World Generation Complete!");
 		
 		return tiles;
 	}
@@ -144,7 +164,7 @@ public class MapGenerator
 			if(ok)
 			{
 				goodBiomes.add(b);
-				totalRarity += b.getRarity();
+				totalRarity += b.getRarity(temperature);
 			}
 		}
 		
@@ -154,7 +174,7 @@ public class MapGenerator
 		
 		for(Biome b : goodBiomes)
 		{
-			previousRarity += b.getRarity();
+			previousRarity += b.getRarity(temperature);
 			if(previousRarity >= rand)
 				return b;
 		}		

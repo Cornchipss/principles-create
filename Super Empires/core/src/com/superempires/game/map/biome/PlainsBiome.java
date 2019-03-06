@@ -1,5 +1,7 @@
 package com.superempires.game.map.biome;
 
+import java.util.Random;
+
 import com.badlogic.gdx.graphics.Color;
 import com.superempires.game.map.tiling.PlainsTile;
 import com.superempires.game.map.tiling.Tile;
@@ -7,7 +9,7 @@ import com.superempires.game.map.tiling.Tile;
 public class PlainsBiome extends Biome
 {
 	@Override
-	public void generateTile(Tile[][] tiles, int x, int y, double temperature)
+	public void generateTile(Tile[][] tiles, int x, int y, double temperature, Random rdm)
 	{
 		tiles[y][x] = new PlainsTile(x, y, temperature, this);
 	}
@@ -19,15 +21,9 @@ public class PlainsBiome extends Biome
 	}
 	
 	@Override
-	public int getRarity()
+	public int getRarity(double temperature)
 	{
 		return 100;
-	}
-
-	@Override
-	public float getPreferredAverageTemperature()
-	{
-		return 80;
 	}
 
 	@Override
