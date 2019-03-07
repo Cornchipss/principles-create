@@ -123,7 +123,6 @@ public class WorldGenerationScreen implements Screen
 			@Override
 			public void run()
 			{
-				DefaultMapGenerator gen = new DefaultMapGenerator(screen);
 				MapGenerator gen = new DefaultMapGenerator(screen);
 				
 				setText("Registering Biomes");
