@@ -19,6 +19,7 @@ import com.superempires.game.map.biome.OceanBiome;
 import com.superempires.game.map.biome.PlainsBiome;
 import com.superempires.game.map.biome.SnowBiome;
 import com.superempires.game.map.generation.DefaultMapGenerator;
+import com.superempires.game.map.generation.MapGenerator;
 import com.superempires.game.map.tiling.Tile;
 
 public class WorldGenerationScreen implements Screen
@@ -123,6 +124,7 @@ public class WorldGenerationScreen implements Screen
 			public void run()
 			{
 				DefaultMapGenerator gen = new DefaultMapGenerator(screen);
+				MapGenerator gen = new DefaultMapGenerator(screen);
 				
 				setText("Registering Biomes");
 				gen.registerBiome(new PlainsBiome(), BiomeType.LAND);
