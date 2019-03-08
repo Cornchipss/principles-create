@@ -19,12 +19,6 @@ public class DesertBiome extends Biome
 	{
 		return Color.WHITE;
 	}
-	
-	@Override
-	public int getRarity(double temperature)
-	{
-		return 100;
-	}
 
 	@Override
 	public boolean isAcceptableTemperature(double temperature)

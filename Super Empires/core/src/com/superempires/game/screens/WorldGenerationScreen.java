@@ -1,5 +1,7 @@
 package com.superempires.game.screens;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -10,14 +12,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.superempires.game.SuperEmpires;
 import com.superempires.game.map.GameMap;
-import com.superempires.game.map.biome.BiomeType;
-import com.superempires.game.map.biome.ColdPlainsBiome;
-import com.superempires.game.map.biome.CragBiome;
-import com.superempires.game.map.biome.DesertBiome;
-import com.superempires.game.map.biome.HotPlainsBiome;
-import com.superempires.game.map.biome.OceanBiome;
-import com.superempires.game.map.biome.PlainsBiome;
-import com.superempires.game.map.biome.SnowBiome;
 import com.superempires.game.map.generation.DefaultMapGenerator;
 import com.superempires.game.map.generation.MapGenerator;
 import com.superempires.game.map.tiling.Tile;
@@ -61,7 +55,7 @@ public class WorldGenerationScreen implements Screen
 			if(subLayout.width != 0)
 				font.draw(batch, subLayout, -subLayout.width / 2, layout.height + 20 + subLayout.height / 2);
 		}
-		catch(Exception ex) 
+		catch(Exception ex)
 		{
 			ex.printStackTrace();
 		} // BitmapFonts are super buggy and i have on idea why
@@ -126,13 +120,6 @@ public class WorldGenerationScreen implements Screen
 				MapGenerator gen = new DefaultMapGenerator(screen);
 				
 				setText("Registering Biomes");
-				gen.registerBiome(new PlainsBiome(), BiomeType.LAND);
-				gen.registerBiome(new DesertBiome(), BiomeType.LAND);
-				gen.registerBiome(new SnowBiome(), BiomeType.LAND);
-				gen.registerBiome(new HotPlainsBiome(), BiomeType.LAND);
-				gen.registerBiome(new CragBiome(), BiomeType.LAND);
-				gen.registerBiome(new ColdPlainsBiome(), BiomeType.LAND);
-				gen.registerBiome(new OceanBiome(), BiomeType.WATER);
 				
 				gen.generateMap(tiles, seed);
 				
@@ -141,6 +128,15 @@ public class WorldGenerationScreen implements Screen
 		});
 		
 		thread.setName("world-gen-thread");
+		thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+		{
+			@Override
+			public void uncaughtException(Thread t, Throwable e)
+			{
+				e.printStackTrace();
+				System.exit(1);
+			}
+		});
 		thread.start();
 	}
 

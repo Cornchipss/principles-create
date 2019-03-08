@@ -21,7 +21,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	/**
 	 * Dimensions (width & height) of each tile in pixels
 	 */
-	public static final float DIMENSIONS = 16;
+	public static final float DIMENSIONS = 8;
 	
 	private static final float[] vertices = new float[]
 	{

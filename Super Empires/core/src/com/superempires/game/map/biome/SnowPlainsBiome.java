@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.superempires.game.map.tiling.SnowTile;
 import com.superempires.game.map.tiling.Tile;
 
-public class SnowBiome extends Biome
+public class SnowPlainsBiome extends Biome
 {
 	@Override
 	public void generateTile(Tile[][] tiles, int x, int y, double temperature, Random rdm)
@@ -18,12 +18,6 @@ public class SnowBiome extends Biome
 	public Color getShadingColor()
 	{
 		return Color.WHITE;
-	}
-	
-	@Override
-	public int getRarity(double temperature)
-	{
-		return Math.abs((int)((temperature - 32) * 8));
 	}
 
 	@Override
