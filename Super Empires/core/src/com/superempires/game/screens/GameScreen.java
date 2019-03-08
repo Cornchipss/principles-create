@@ -10,14 +10,14 @@ import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
 import com.superempires.game.util.Reference;
 
-public class MainScreen implements Screen
+public class GameScreen implements Screen
 {
 	private FancyCamera cam = new FancyCamera(Reference.VIEWPORT_WIDTH, Reference.VIEWPORT_HEIGHT);
 	private MasterBatch batch;
 		
 	private GameMap map;
 	
-	public MainScreen(GameMap map)
+	public GameScreen(GameMap map)
 	{
 		this.map = map;
 	}

@@ -14,5 +14,10 @@ public abstract class Biome
 		return Color.WHITE;
 	}
 	
+	public static boolean isFreezing(double temperature)
+	{
+		return temperature <= 32;
+	}
+	
 	public abstract boolean isAcceptableTemperature(double temperature);
 }

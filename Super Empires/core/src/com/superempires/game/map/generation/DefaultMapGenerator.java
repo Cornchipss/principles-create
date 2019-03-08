@@ -8,10 +8,7 @@ import com.superempires.game.map.biome.CragBiome;
 import com.superempires.game.map.biome.DesertBiome;
 import com.superempires.game.map.biome.ForestBiome;
 import com.superempires.game.map.biome.OceanBiome;
-import com.superempires.game.map.biome.PineForestBiome;
 import com.superempires.game.map.biome.PlainsBiome;
-import com.superempires.game.map.biome.SnowForestBiome;
-import com.superempires.game.map.biome.SnowPlainsBiome;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.screens.WorldGenerationScreen;
 
@@ -31,7 +28,7 @@ public class DefaultMapGenerator extends MapGenerator
 		
 		double[] elevationRanges =
 			{
-					20,
+					2,
 					2,
 					2,
 					20,
@@ -49,9 +46,6 @@ public class DefaultMapGenerator extends MapGenerator
 		final Biome DESERT = new DesertBiome();
 		final Biome PLAINS = new PlainsBiome();
 		final Biome FOREST = new ForestBiome();
-		final Biome PINE_FOREST = new PineForestBiome();
-		final Biome SNOW_PLAINS = new SnowPlainsBiome();
-		final Biome SNOW_FOREST = new SnowForestBiome();
 		
 		Biome[][] table =
 		{
@@ -76,14 +70,14 @@ public class DefaultMapGenerator extends MapGenerator
 			{
 				DESERT,
 				PLAINS,
-				PLAINS,
-				PINE_FOREST,
+				FOREST,
+				FOREST,
 			},
 			{
-				SNOW_PLAINS,
-				SNOW_FOREST,
-				SNOW_FOREST,
-				SNOW_FOREST
+				PLAINS,
+				FOREST,
+				FOREST,
+				PLAINS
 			}
 		};
 		
@@ -91,6 +85,7 @@ public class DefaultMapGenerator extends MapGenerator
 		
 		Random rdm = new Random(seed);
 		
+		SimplexNoise temperatureGenerator = new SimplexNoise(seed * 3);
 		SimplexNoise elevationGenerator = new SimplexNoise(seed);
 		SimplexNoise humidtyGenerator = new SimplexNoise(seed * 2); // * 2 is arbitrary, should be replaced later with something slightly more meaningful
 		
@@ -128,7 +123,9 @@ public class DefaultMapGenerator extends MapGenerator
 				else
 					b = table[0][(int)(humidity / (100 / table[0].length + 0.5))];
 				
-				b.generateTile(tiles, x, y, elevation, rdm);
+				double temperature = (temperatureGenerator.noise(x * scale, y * scale) + 0.8) * 50;
+				
+				b.generateTile(tiles, x, y, temperature, rdm);
 			}
 			
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);

@@ -5,7 +5,7 @@ import com.superempires.game.map.GameMap;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.registry.Textures;
-import com.superempires.game.screens.MainScreen;
+import com.superempires.game.screens.GameScreen;
 import com.superempires.game.screens.WorldGenerationScreen;
 
 public class SuperEmpires extends Game
@@ -33,7 +33,7 @@ public class SuperEmpires extends Game
 			super.render();
 		else
 		{
-			setScreen(new MainScreen(new GameMap(tiles)));
+			setScreen(new GameScreen(new GameMap(tiles)));
 			genScreen = null;
 		}
 	}

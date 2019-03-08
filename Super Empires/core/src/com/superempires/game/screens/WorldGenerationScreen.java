@@ -142,7 +142,7 @@ public class WorldGenerationScreen implements Screen
 
 	public void complete(Tile[][] tiles, SuperEmpires instance)
 	{
-		instance.setScreen(new MainScreen(new GameMap(tiles)));
+		instance.setScreen(new GameScreen(new GameMap(tiles)));
 	}
 	
 	public boolean done() { return done; }
