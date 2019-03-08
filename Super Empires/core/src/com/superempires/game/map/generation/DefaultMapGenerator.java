@@ -27,6 +27,8 @@ public class DefaultMapGenerator extends MapGenerator
 	@Override
 	public void generateMap(final Tile[][] tiles, long seed)
 	{
+		setText("Creating Elevation Ranges");
+		
 		double[] elevationRanges =
 			{
 					20,
@@ -39,41 +41,53 @@ public class DefaultMapGenerator extends MapGenerator
 		
 		prepareRatios(elevationRanges);
 		
-		// Code works
+		setText("Creating Biome Table");
+		
+		final Biome OCEAN = new OceanBiome();
+		final Biome BEACH = new BeachBiome();
+		final Biome CRAG = new CragBiome();
+		final Biome DESERT = new DesertBiome();
+		final Biome PLAINS = new PlainsBiome();
+		final Biome FOREST = new ForestBiome();
+		final Biome PINE_FOREST = new PineForestBiome();
+		final Biome SNOW_PLAINS = new SnowPlainsBiome();
+		final Biome SNOW_FOREST = new SnowForestBiome();
 		
 		Biome[][] table =
 		{
 			{
-				new OceanBiome()
+				OCEAN
 			},
 			{
-				new BeachBiome()
+				BEACH
 			},
 			{
-				new CragBiome(),
-				new DesertBiome(),
-				new PlainsBiome(),
-				new ForestBiome()
+				CRAG,
+				DESERT,
+				PLAINS,
+				FOREST
 			},
 			{
-				new DesertBiome(),
-				new PlainsBiome(),
-				new PlainsBiome(),
-				new ForestBiome()
+				DESERT,
+				PLAINS,
+				PLAINS,
+				FOREST
 			},
 			{
-				new DesertBiome(),
-				new PlainsBiome(),
-				new PlainsBiome(),
-				new PineForestBiome()
+				DESERT,
+				PLAINS,
+				PLAINS,
+				PINE_FOREST,
 			},
 			{
-				new SnowPlainsBiome(),
-				new SnowForestBiome(),
-				new SnowForestBiome(),
-				new SnowForestBiome()
+				SNOW_PLAINS,
+				SNOW_FOREST,
+				SNOW_FOREST,
+				SNOW_FOREST
 			}
 		};
+		
+		setText("Pre-Biome Generation Init");
 		
 		Random rdm = new Random(seed);
 		
@@ -81,6 +95,8 @@ public class DefaultMapGenerator extends MapGenerator
 		SimplexNoise humidtyGenerator = new SimplexNoise(seed * 2); // * 2 is arbitrary, should be replaced later with something slightly more meaningful
 		
 		double scale = 0.01;
+		
+		setText("Generating Biomes");
 		
 		for(int y = 0; y < tiles.length; y++)
 		{
@@ -115,7 +131,7 @@ public class DefaultMapGenerator extends MapGenerator
 				b.generateTile(tiles, x, y, elevation, rdm);
 			}
 			
-			setSubText((y + 1) + " / " + tiles.length);
+			setSubText("Row: " + (y + 1) + " / " + tiles.length);
 		}
 	}
 	
