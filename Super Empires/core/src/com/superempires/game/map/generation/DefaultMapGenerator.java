@@ -23,7 +23,7 @@ public class DefaultMapGenerator extends MapGenerator
 	private final static Biome DESERT = new DesertBiome();
 	private final static Biome PLAINS = new PlainsBiome();
 	private final static Biome FOREST = new ForestBiome();
-	
+
 	private final static Biome[][] table =
 	{
 		{
@@ -57,7 +57,7 @@ public class DefaultMapGenerator extends MapGenerator
 			PLAINS
 		}
 	};
-	
+
 	private static double[] elevationRanges =
 		{
 				2,
@@ -67,52 +67,52 @@ public class DefaultMapGenerator extends MapGenerator
 				10,
 				3
 		};
-	
+
 	static
 	{
 		Helper.arrayToRatios(elevationRanges);
 	}
-	
+
 	public DefaultMapGenerator(WorldGenerationScreen screen)
 	{
 		super(screen);
 	}
-	
+
 	@Override
 	public void generateMap(final Tile[][] tiles, long seed)
 	{
 		setText("Pre-Biome Generation Init");
-		
+
 		Random rdm = new Random(seed);
-		
+
 		SimplexNoise temperatureGenerator = new SimplexNoise(seed * 3);
 		SimplexNoise elevationGenerator = new SimplexNoise(seed);
 		SimplexNoise humidtyGenerator = new SimplexNoise(seed * 2); // * 2 is arbitrary, should be replaced later with something slightly more meaningful
-		
+
 		double scale = 0.01;
-		
+
 		setText("Generating Biomes");
-		
+
 		for(int y = 0; y < tiles.length; y++)
 		{
 			for(int x = 0; x < tiles[y].length; x++)
 			{
 				double elevationNoise = elevationGenerator.noise(x * scale, y * scale);
 				double humidityNoise = humidtyGenerator.noise(x * scale, y * scale);
-				
+
 				double elevation = elevationNoise * 100 + 20;
 				double humidity = humidityNoise * 50 + 50;
-				
+
 				Biome b = null;
-				
+
 				if(elevation > 0)
 				{
 					double rangesTotal = 1;
-					
+
 					for(int i = elevationRanges.length - 1; i >= 0; i--)
 					{
 						rangesTotal -= elevationRanges[i];
-						
+
 						if(elevation - rangesTotal * 100 >= 0)
 						{
 							b = table[i][(int)(humidity / (100 / table[i].length + 0.5))];
@@ -122,12 +122,12 @@ public class DefaultMapGenerator extends MapGenerator
 				}
 				else
 					b = table[0][(int)(humidity / (100 / table[0].length + 0.5))];
-				
+
 				double temperature = (temperatureGenerator.noise(x * scale, y * scale) + 0.8) * 50;
-				
+
 				b.generateTile(tiles, x, y, temperature, rdm);
 			}
-			
+
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);
 		}
 	}

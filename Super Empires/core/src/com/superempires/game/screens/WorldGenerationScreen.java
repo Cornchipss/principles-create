@@ -21,11 +21,21 @@ public class WorldGenerationScreen implements Screen
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private GlyphLayout layout, subLayout;
-	
+
 	private OrthographicCamera cam;
-	
+
 	private volatile boolean done = false;
-	
+
+	private final long SEED;
+	private final Tile[][] TILES;
+
+	public WorldGenerationScreen(int w, int h, long seed)
+	{
+		this.SEED = seed;
+
+		TILES = new Tile[w][h];
+	}
+
 	@Override
 	public void show()
 	{
@@ -33,41 +43,52 @@ public class WorldGenerationScreen implements Screen
 		font = new BitmapFont();
 		layout = new GlyphLayout(font, "Super Empires!");
 		subLayout = new GlyphLayout(font, "");
-		
+
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		
+
 		font.setColor(Color.WHITE);
 	}
 
 	@Override
 	public void render(float delta)
 	{
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		
-		try
+		if(done())
 		{
-			if(layout.width != 0)
-				font.draw(batch, layout, -layout.width / 2, layout.height / 2);
-			if(subLayout.width != 0)
-				font.draw(batch, subLayout, -subLayout.width / 2, layout.height + 20 + subLayout.height / 2);
+			SuperEmpires.swapScreen(new GameScreen(new GameMap(getTiles())));
 		}
-		catch(Exception ex)
+		else
 		{
-			ex.printStackTrace();
-		} // BitmapFonts are super buggy and i have on idea why
-		
-		batch.end();
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			if(batch != null)
+			{
+				batch.setProjectionMatrix(cam.combined);
+				batch.begin();
+
+				// BitmapFonts are super buggy and i have on idea why
+				try
+				{
+					if(layout.width != 0)
+						font.draw(batch, layout, -layout.width / 2, layout.height / 2);
+					if(subLayout.width != 0)
+						font.draw(batch, subLayout, -subLayout.width / 2, layout.height + 20 + subLayout.height / 2);
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+
+				batch.end();
+			}
+		}
 	}
-	
+
 	public void setText(String text)
 	{
 		layout.setText(font, text);
 	}
-	
+
 	public void setSubText(String text)
 	{
 		subLayout.setText(font, text);
@@ -78,55 +99,57 @@ public class WorldGenerationScreen implements Screen
 	{
 		cam.viewportWidth = Gdx.graphics.getWidth();
 		cam.viewportHeight = Gdx.graphics.getHeight();
-		
+
 		cam.update();
 	}
 
 	@Override
 	public void pause()
 	{
-		
+
 	}
 
 	@Override
 	public void resume()
 	{
-		
+
 	}
 
 	@Override
 	public void hide()
 	{
-		
+
 	}
 
 	@Override
 	public void dispose()
 	{
-		System.out.println("DISPOSED!");
 		batch.dispose();
 		font.dispose();
+
+		batch = null;
+		font = null;
 	}
 
-	public void generate(final Tile[][] tiles, final long seed)
+	public void generate()
 	{
 		final WorldGenerationScreen screen = this;
-		
+
 		Thread thread = new Thread(new Runnable()
-		{	
+		{
 			@Override
 			public void run()
 			{
 				MapGenerator gen = new DefaultMapGenerator(screen);
-				
+
 				setText("Registering Biomes");
-				
-				gen.generateMap(tiles, seed);
-				
+
+				gen.generateMap(TILES, SEED);
+
 				done = true;
 			}
 		});
-		
+
 		thread.setName("world-gen-thread");
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
 		{
@@ -140,10 +163,7 @@ public class WorldGenerationScreen implements Screen
 		thread.start();
 	}
 
-	public void complete(Tile[][] tiles, SuperEmpires instance)
-	{
-		instance.setScreen(new MainScreen(new GameMap(tiles)));
-	}
-	
 	public boolean done() { return done; }
+
+	public Tile[][] getTiles() { return TILES; }
 }
