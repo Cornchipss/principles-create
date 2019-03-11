@@ -3,29 +3,29 @@ package com.superempires.game.map.tiling;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
-public class CragTile extends Tile
+public class WaterTile extends Tile
 {
-	public CragTile(float x, float y, double temperature, Biome biome)
+	public WaterTile(float x, float y, double temperature, Biome biome)
 	{
-		super(x, y, temperature, GameRegistry.getTexture("tile-crag"), biome);
+		super(x, y, temperature, GameRegistry.getTexture("tile-water"), biome);
 	}
 
 	@Override
 	public double getTravelTime()
 	{
-		return 1;
+		return 0;
 	}
 
 	@Override
 	public boolean isWalkable()
 	{
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isSailable()
 	{
-		return false;
+		return true;
 	}
-
+	
 }

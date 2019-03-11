@@ -26,4 +26,22 @@ public class Helper
 		
 		return distX * distX + distY * distY;
 	}
+
+	public static int linearSearch(Object[] arr, Object o)
+	{
+		for(int i = 0; i < arr.length; i++)
+			if(arr[i].equals(o))
+				return i;
+		return -1;
+	}
+	
+	public static void arrayToRatios(double[] ratios)
+	{
+		double sum = 0;
+		for(double d : ratios)
+			sum += d;
+		
+		for(int i = 0; i < ratios.length; i++)
+			ratios[i] /= sum;
+	}
 }

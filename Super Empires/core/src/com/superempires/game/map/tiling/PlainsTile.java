@@ -5,11 +5,6 @@ import com.superempires.game.registry.GameRegistry;
 
 public class PlainsTile extends Tile
 {
-	static
-	{
-		GameRegistry.registerTexture("tile-grass", "tiles/tile-grass.png");
-	}
-	
 	public PlainsTile(float x, float y, double temperature, Biome biome)
 	{
 		super(x, y, temperature, GameRegistry.getTexture("tile-grass"), biome);
@@ -25,5 +20,11 @@ public class PlainsTile extends Tile
 	public double getTravelTime()
 	{
 		return 1;
+	}
+
+	@Override
+	public boolean isSailable()
+	{
+		return false;
 	}
 }

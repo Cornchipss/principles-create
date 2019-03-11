@@ -21,7 +21,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	/**
 	 * Dimensions (width & height) of each tile in pixels
 	 */
-	public static final float DIMENSIONS = 64;
+	public static final float DIMENSIONS = 8;
 	
 	private static final float[] vertices = new float[]
 	{
@@ -78,7 +78,10 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	@Override
 	public void drawShapes(ShapeRenderer batch)
 	{
-		
+		if(building != null)
+			building.drawShapes(batch);
+		if(unit != null)
+			unit.drawShapes(batch);
 	}
 	
 	@Override
@@ -95,18 +98,31 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 					vertices[i + 3] + getTransform().getY(), 
 					Color.BLACK, Color.BLACK);
 		}
+		
+		if(building != null)
+			building.drawLines(batch);
+		if(unit != null)
+			unit.drawLines(batch);
 	}
 
 	@Override
 	public void drawPolygons(PolygonSpriteBatch batch)
 	{
 		polygonSprite.draw(batch);
+		
+		if(building != null)
+			building.drawPolygons(batch);
+		if(unit != null)
+			unit.drawPolygons(batch);
 	}
 
 	@Override
 	public void drawSprites(SpriteBatch batch)
 	{
-		
+		if(building != null)
+			building.drawSprites(batch);
+		if(unit != null)
+			unit.drawSprites(batch);
 	}
 	
 	public void setSelected(boolean s)
@@ -156,4 +172,10 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	 * @return true if it can be walked on, false if not
 	 */
 	public abstract boolean isWalkable();
+	
+	/**
+	 * Can the tile be sailed on
+	 * @return true if it can be sailed on, false if not
+	 */
+	public abstract boolean isSailable();
 }

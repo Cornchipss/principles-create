@@ -3,19 +3,21 @@ package com.superempires.game.map.biome;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.Color;
-import com.superempires.game.map.tiling.CragTile;
-import com.superempires.game.map.tiling.SnowTile;
+import com.superempires.game.map.tiling.IceTile;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.map.tiling.WaterTile;
 
-public class CragBiome extends Biome
+public class OceanBiome extends Biome
 {
 	@Override
 	public void generateTile(Tile[][] tiles, int x, int y, double temperature, Random rdm)
 	{
-		if(Biome.isFreezing(temperature))
-			tiles[y][x] = new SnowTile(x, y, temperature, this);
+		if(Biome.isFreezing(temperature) && ((int)temperature <= 0 || rdm.nextInt((int)temperature) < 8))
+		{
+			tiles[y][x] = new IceTile(x, y, temperature, this);
+		}
 		else
-			tiles[y][x] = new CragTile(x, y, temperature, this);
+			tiles[y][x] = new WaterTile(x, y, temperature, this);
 	}
 
 	@Override
@@ -27,7 +29,6 @@ public class CragBiome extends Biome
 	@Override
 	public boolean isAcceptableTemperature(double temperature)
 	{
-		return temperature >= 100;
+		return true;
 	}
-
 }

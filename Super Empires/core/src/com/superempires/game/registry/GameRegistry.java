@@ -19,4 +19,10 @@ public class GameRegistry
 	{
 		return textures.get(name);
 	}
+	
+	public static void dispose()
+	{
+		for(String s : textures.keySet())
+			textures.get(s).dispose();
+	}
 }

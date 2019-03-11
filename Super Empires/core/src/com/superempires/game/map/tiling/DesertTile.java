@@ -5,11 +5,6 @@ import com.superempires.game.registry.GameRegistry;
 
 public class DesertTile extends Tile
 {
-	static
-	{
-		GameRegistry.registerTexture("tile-desert", "tiles/tile-sand.png");
-	}
-	
 	public DesertTile(float x, float y, double temperature, Biome biome)
 	{
 		super(x, y, temperature, GameRegistry.getTexture("tile-desert"), biome);
@@ -25,5 +20,11 @@ public class DesertTile extends Tile
 	public double getTravelTime()
 	{
 		return 1;
+	}
+
+	@Override
+	public boolean isSailable()
+	{
+		return false;
 	}
 }

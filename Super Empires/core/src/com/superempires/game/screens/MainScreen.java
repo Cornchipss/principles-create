@@ -5,13 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.superempires.game.map.GameMap;
-import com.superempires.game.map.biome.ColdPlainsBiome;
-import com.superempires.game.map.biome.CragBiome;
-import com.superempires.game.map.biome.DesertBiome;
-import com.superempires.game.map.biome.HotPlainsBiome;
-import com.superempires.game.map.biome.PlainsBiome;
-import com.superempires.game.map.biome.SnowBiome;
-import com.superempires.game.map.generation.MapGenerator;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
@@ -21,28 +14,18 @@ public class MainScreen implements Screen
 {
 	private FancyCamera cam = new FancyCamera(Reference.VIEWPORT_WIDTH, Reference.VIEWPORT_HEIGHT);
 	private MasterBatch batch;
-	
-	MapGenerator gen = new MapGenerator();
-	
+		
 	private GameMap map;
 	
-	public MainScreen()
+	public MainScreen(GameMap map)
 	{
-		gen.registerBiome(new PlainsBiome());
-		gen.registerBiome(new DesertBiome());
-		gen.registerBiome(new SnowBiome());
-		gen.registerBiome(new HotPlainsBiome());
-		gen.registerBiome(new CragBiome());
-		gen.registerBiome(new ColdPlainsBiome());
-		
-		map = new GameMap(500, 100, gen);
-		
-		batch = new MasterBatch();
+		this.map = map;
 	}
 	
 	@Override
 	public void show()
 	{
+		batch = new MasterBatch();
 		cam.position.set(Gdx.graphics.getWidth() / 2, map.getHeight() * Tile.DIMENSIONS - Gdx.graphics.getHeight() / 2, 0);
 	}
 	
