@@ -1,16 +1,32 @@
 package com.superempires.game.gui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.superempires.game.objects.properties.Transform;
 
-public class GUIText extends GUIElement
+public class GUIText extends GUITextElement
 {
-	public GUIText(Transform transform, GUI gui)
+	private Alignment alignment;
+	private float scale;
+	
+	public GUIText(float x, float y, GUI gui, BitmapFont font)
 	{
-		super(transform, gui);
+		this(x, y, gui, font, "", Color.WHITE, 1);
+	}
+	
+	public GUIText(float x, float y, GUI gui, BitmapFont font, String text, Color color, float scale)
+	{
+		this(x, y, gui, font, text, color, scale, Alignment.CENTER);
+	}
+	
+	public GUIText(float x, float y, GUI gui, BitmapFont font, String text, Color color, float scale, Alignment align)
+	{
+		super(x, y, text, gui, font, color);
+		
+		this.alignment = align;
+		this.scale = scale;
 	}
 
 	@Override
@@ -34,12 +50,20 @@ public class GUIText extends GUIElement
 	@Override
 	public void drawSprites(SpriteBatch batch)
 	{
+		float x = getTransform().getX();
+		float y = getTransform().getY();
 		
+		if(alignment == Alignment.CENTER)
+			x -= getLayout().width / 2;
+		
+		getFont().getData().setScale(scale);
+		
+		getFont().draw(batch, getLayout(), x, y + getLayout().height);
 	}
-
+	
 	@Override
-	public void changeFont(BitmapFont f)
+	public void dispose()
 	{
-		
+		getFont().dispose();
 	}
 }

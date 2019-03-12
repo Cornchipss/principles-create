@@ -2,10 +2,14 @@ package com.superempires.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.superempires.game.SuperEmpires;
+import com.superempires.game.gui.Alignment;
 import com.superempires.game.gui.GUI;
 import com.superempires.game.gui.GUIButton;
+import com.superempires.game.gui.GUIText;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
@@ -30,6 +34,7 @@ public class MainMenuScreen implements Screen
 				new GUIButton(
 					new Transform(-50, -20, 100, 40), 
 					gui,
+					new BitmapFont(),
 					new Callback()
 					{
 						@Override
@@ -42,7 +47,9 @@ public class MainMenuScreen implements Screen
 							genScreen.generate();
 						}
 					}, 
-					"BEGIN"));
+					"PLAY"));
+		
+		gui.addElement(new GUIText(0, 200, gui, new BitmapFont(), "Super Empires!", Color.RED, 5, Alignment.CENTER));
 		
 		cam = new FancyCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
@@ -101,7 +108,8 @@ public class MainMenuScreen implements Screen
 	{
 		batch.dispose();
 		batch = null;
-		gui.getFont().dispose();
+		
+		gui.dispose();
 		gui = null;
 	}
 }

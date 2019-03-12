@@ -3,7 +3,6 @@ package com.superempires.game.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -14,8 +13,6 @@ public class GUI implements IDrawable
 {
 	private List<GUIElement> elements = new ArrayList<>();
 	private List<IInteractable> interactables = new ArrayList<>();
-	
-	private BitmapFont font = new BitmapFont();
 	
 	public void update(float delta, FancyCamera cam)
 	{
@@ -70,7 +67,10 @@ public class GUI implements IDrawable
 		if(e instanceof IInteractable)
 			interactables.remove((IInteractable)e);
 	}
-	
-	public BitmapFont getFont() { return font; }
-	public void setFont(BitmapFont f) { this.font = f; }
+
+	public void dispose()
+	{
+		for(GUIElement elem : elements)
+			elem.dispose();
+	}
 }
