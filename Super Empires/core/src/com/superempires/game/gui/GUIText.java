@@ -54,11 +54,14 @@ public class GUIText extends GUITextElement
 		float y = getTransform().getY();
 		
 		if(alignment == Alignment.CENTER)
-			x -= getLayout().width / 2;
+			x -= getTextBox().getWidth() * scale / 2;
+		else if(alignment == Alignment.LEFT)
+			x -= getTextBox().getWidth() * scale;
 		
 		getFont().getData().setScale(scale);
 		
-		getFont().draw(batch, getLayout(), x, y + getLayout().height);
+		getTextBox().setBounds(x, y, getTransform().getWidth(), getTransform().getHeight());
+		getTextBox().draw(batch, 1);
 	}
 	
 	@Override

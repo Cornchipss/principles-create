@@ -3,11 +3,14 @@ package com.superempires.game.gui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.superempires.game.objects.properties.Transform;
 
 public abstract class GUITextElement extends GUIElement
 {
 	private GlyphLayout layout;
+	private Label label;
 	private String text;
 	private Color color;
 	private BitmapFont font;
@@ -19,6 +22,9 @@ public abstract class GUITextElement extends GUIElement
 		this.font = font;
 		this.color = color;
 		layout = new GlyphLayout(getFont(), text, color, getTransform().getWidth(), 1, false);
+
+		label = new Label(text, new LabelStyle(getFont(), color));
+		getTextBox().scaleBy(1);
 		
 		this.text = text;
 	}
@@ -29,7 +35,10 @@ public abstract class GUITextElement extends GUIElement
 		
 		this.font = font;
 		this.color = color;
+		
 		layout = new GlyphLayout(getFont(), text, color, 0, 1, false);
+		
+		label = new Label(text, new LabelStyle(getFont(), color));
 		
 		setTransform(new Transform(x, y, layout.width, layout.height));
 	}
@@ -41,6 +50,8 @@ public abstract class GUITextElement extends GUIElement
 	}
 	
 	public BitmapFont getFont() { return font; }
+	
+	public Label getTextBox() { return label; }
 	
 	public GlyphLayout getLayout() { return layout; }
 	public void setLayout(GlyphLayout layout) { this.layout = layout; }
