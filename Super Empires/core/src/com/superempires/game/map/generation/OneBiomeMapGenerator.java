@@ -1,10 +1,9 @@
 package com.superempires.game.map.generation;
 
-import java.util.Random;
-
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.screens.WorldGenerationScreen;
+import com.superempires.game.util.RNG;
 
 public class OneBiomeMapGenerator extends MapGenerator
 {
@@ -20,7 +19,7 @@ public class OneBiomeMapGenerator extends MapGenerator
 	@Override
 	public void generateMap(Tile[][] tiles, long seed)
 	{
-		Random rdm = new Random(seed);
+		RNG rdm = new RNG(seed);
 		
 		for(int y = 0; y < tiles.length; y++)
 		{

@@ -1,17 +1,18 @@
-package com.superempires.game.map.buildings;
+package com.superempires.game.map.buildings.natural;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.superempires.game.map.buildings.Building;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.registry.GameRegistry;
 
-public class TestBuilding extends Building
+public class Tree extends Building
 {
-	private Texture texture = GameRegistry.getTexture("building");
+	private Texture texture = GameRegistry.getTexture("building-tree");
 	
-	public TestBuilding(Transform t)
+	public Tree(Transform t)
 	{
 		super(t);
 	}

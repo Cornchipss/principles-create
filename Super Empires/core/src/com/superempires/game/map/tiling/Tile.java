@@ -21,7 +21,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	/**
 	 * Dimensions (width & height) of each tile in pixels
 	 */
-	public static final float DIMENSIONS = 8;
+	public static final float DIMENSIONS = 64;
 	
 	private static final float[] vertices = new float[]
 	{
@@ -149,10 +149,24 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	}
 
 	public Building getBuilding() { return building; }
-	public void setBuilding(Building building) { this.building = building; }
+	public void setBuilding(Building building)
+	{
+		if(this.building != null)
+			this.building.setTile(null);
+		
+		this.building = building;
+		building.setTile(this);
+	}
 
 	public Unit getUnit() { return unit; }
-	public void setUnit(Unit unit) { this.unit = unit; }
+	public void setUnit(Unit unit)
+	{
+		if(this.unit != null)
+			this.unit.setTile(null);
+		
+		this.unit = unit;
+		unit.setTile(this);
+	}
 	
 	public Biome getBiome() { return biome; }
 	
@@ -166,7 +180,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	 * @return the time
 	 */
 	public abstract double getTravelTime();
-
+	
 	/**
 	 * Can the tile be walked on
 	 * @return true if it can be walked on, false if not

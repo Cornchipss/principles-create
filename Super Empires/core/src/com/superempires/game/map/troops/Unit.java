@@ -4,23 +4,24 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.objects.PhysicalObject;
+import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.render.IDrawable;
 
 public class Unit extends PhysicalObject implements IDrawable
 {
-	static
-	{
-		GameRegistry.registerTexture("unit", "units/unit.png");
-	}
-	
 	private Texture texture = GameRegistry.getTexture("unit");
+	private Tile tile;
 	
-	public Unit(float x, float y)
+	public Unit(Transform transform)
 	{
-		super(x, y);
+		super(transform);
 	}
+
+	public void setTile(Tile tile) { this.tile = tile; }
+	public Tile getTile() { return tile; }
 	
 	@Override
 	public void drawShapes(ShapeRenderer batch)

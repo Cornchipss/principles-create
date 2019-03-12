@@ -10,5 +10,8 @@ public class Textures
 		GameRegistry.registerTexture("tile-grass", "tiles/tile-grass.png");
 		GameRegistry.registerTexture("tile-ice", "tiles/tile-ice.png");
 		GameRegistry.registerTexture("tile-water", "tiles/tile-water.png");
+		GameRegistry.registerTexture("unit", "units/unit.png");
+		GameRegistry.registerTexture("building", "buildings/building.png");
+		GameRegistry.registerTexture("building-tree", "buildings/building-tree.png");
 	}
 }

@@ -17,6 +17,11 @@ public class PhysicalObject extends GameObject
 		transform = new Transform(x, y, Tile.DIMENSIONS, Tile.DIMENSIONS);
 	}
 	
+	public PhysicalObject(Transform t)
+	{
+		transform = t;
+	}
+	
 	public Transform getTransform() { return transform; }
 	public void setTransform(Transform transform) { this.transform = transform; }
 }

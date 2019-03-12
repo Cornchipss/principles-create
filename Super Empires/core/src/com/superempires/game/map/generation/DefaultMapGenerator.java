@@ -1,7 +1,5 @@
 package com.superempires.game.map.generation;
 
-import java.util.Random;
-
 import com.superempires.game.map.biome.BeachBiome;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.biome.CragBiome;
@@ -12,6 +10,7 @@ import com.superempires.game.map.biome.PlainsBiome;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.screens.WorldGenerationScreen;
 import com.superempires.game.util.Helper;
+import com.superempires.game.util.RNG;
 
 import libs.noise.SimplexNoise;
 
@@ -83,8 +82,8 @@ public class DefaultMapGenerator extends MapGenerator
 	{
 		setText("Pre-Biome Generation Init");
 
-		Random rdm = new Random(seed);
-
+		RNG rng = new RNG(seed * 5);
+		
 		SimplexNoise temperatureGenerator = new SimplexNoise(seed * 3);
 		SimplexNoise elevationGenerator = new SimplexNoise(seed);
 		SimplexNoise humidtyGenerator = new SimplexNoise(seed * 2); // * 2 is arbitrary, should be replaced later with something slightly more meaningful
@@ -112,7 +111,7 @@ public class DefaultMapGenerator extends MapGenerator
 					for(int i = elevationRanges.length - 1; i >= 0; i--)
 					{
 						rangesTotal -= elevationRanges[i];
-
+						
 						if(elevation - rangesTotal * 100 >= 0)
 						{
 							b = table[i][(int)(humidity / (100 / table[i].length + 0.5))];
@@ -125,9 +124,9 @@ public class DefaultMapGenerator extends MapGenerator
 
 				double temperature = (temperatureGenerator.noise(x * scale, y * scale) + 0.8) * 50;
 
-				b.generateTile(tiles, x, y, temperature, rdm);
+				b.generateTile(tiles, x, y, temperature, rng);
 			}
-
+			
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);
 		}
 	}

@@ -2,7 +2,7 @@ package com.superempires.game.objects.properties;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class Transform
+public class Transform implements Cloneable
 {
 	private float x, y;
 	private float width, height;
@@ -27,6 +27,9 @@ public class Transform
 	{
 		return center;
 	}
+	
+	@Override
+	public Transform clone() { return new Transform(x, y, width, height); }
 	
 	public float getX() { return x; }
 	public void setX(float x) { this.x = x; }
