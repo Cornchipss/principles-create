@@ -32,7 +32,7 @@ public class MainMenuScreen implements Screen
 		gui = new GUI();
 		
 		FreeTypeFontParameter params = new FreeTypeFontParameter();
-		params.size = 48 * 2;
+		params.size = 96;
 		params.color = Color.RED;
 		
 		FreeTypeFontParameter params2 = new FreeTypeFontParameter();

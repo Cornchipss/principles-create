@@ -1,5 +1,6 @@
 package com.superempires.game.map.generation;
 
+import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.biome.BeachBiome;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.biome.CragBiome;
@@ -71,12 +72,12 @@ public class DefaultMapGenerator extends MapGenerator
 	{
 		Helper.arrayToRatios(elevationRanges);
 	}
-
+	
 	public DefaultMapGenerator(WorldGenerationScreen screen)
 	{
 		super(screen);
 	}
-
+	
 	@Override
 	public void generateMap(final Tile[][] tiles, long seed)
 	{
@@ -91,7 +92,14 @@ public class DefaultMapGenerator extends MapGenerator
 		double scale = 0.01;
 
 		setText("Generating Biomes");
-
+		
+		// For Pi day (3/14/19)
+		float radius = (float)(tiles[0].length * 0.75 * Tile.DIMENSIONS + tiles.length * 0.5 * Tile.DIMENSIONS) / 2f;
+		Vector2 center = new Vector2((float)(0.75 * tiles[0].length * Tile.DIMENSIONS), (float)(0.5 * tiles.length * Tile.DIMENSIONS));
+		
+		double within = 0;
+		double without = 0;
+		
 		for(int y = 0; y < tiles.length; y++)
 		{
 			for(int x = 0; x < tiles[y].length; x++)
@@ -125,9 +133,20 @@ public class DefaultMapGenerator extends MapGenerator
 				double temperature = (temperatureGenerator.noise(x * scale, y * scale) + 0.8) * 50;
 
 				b.generateTile(tiles, x, y, temperature, rng);
+				
+				float xx = x * 0.75f * Tile.DIMENSIONS, yy = y * Tile.DIMENSIONS - (x % 2) * Tile.DIMENSIONS / 2;
+				
+				// For Pi day (3/14/19)
+				if(Helper.distanceSquared(new Vector2(xx, yy), center) <= radius * radius)
+					within++;
+				else
+					without++;
 			}
 			
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);
 		}
+		
+		// For Pi day (3/14/19)
+		System.out.println("Pi is approximately: " + within / without);
 	}
 }

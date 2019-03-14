@@ -48,7 +48,7 @@ public class WorldGenerationScreen implements Screen
 
 		font.setColor(Color.WHITE);
 	}
-
+	
 	@Override
 	public void render(float delta)
 	{

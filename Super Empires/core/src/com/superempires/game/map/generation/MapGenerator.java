@@ -14,12 +14,14 @@ public abstract class MapGenerator
 	
 	protected void setText(String txt)
 	{
-		getScreen().setText(txt);
+		if(getScreen() != null)
+			getScreen().setText(txt);
 	}
 	
 	protected void setSubText(String txt)
 	{
-		getScreen().setSubText(txt);
+		if(getScreen() != null)
+			getScreen().setSubText(txt);
 	}
 	
 	/**

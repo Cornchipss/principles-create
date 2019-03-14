@@ -28,9 +28,8 @@ public class PlainsBiome extends Biome
 	
 	protected void genTree(Tile[][] tiles, int x, int y, Color c, RNG rdm)
 	{
-		if(rdm.getRandom().nextInt((int)(rdm.getNoise().noise(x * 0.004, y * 0.004) * 100 + 100.5)) > 120)
+		if(rdm.getRandom().nextInt((int)((rdm.getNoise().noise(x * 0.004, y * 0.004) + 1) * 100 + 0.5)) > 120)
 		{
-			System.out.println("YAY");
 			tiles[y][x].setBuilding(new Tree(tiles[y][x].getTransform(), c));
 		}
 	}
