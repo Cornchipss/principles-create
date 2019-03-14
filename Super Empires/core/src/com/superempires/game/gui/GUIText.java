@@ -1,6 +1,5 @@
 package com.superempires.game.gui;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,24 +8,30 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class GUIText extends GUITextElement
 {
 	private Alignment alignment;
-	private float scale;
 	
-	public GUIText(float x, float y, GUI gui, BitmapFont font)
+	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font)
 	{
-		this(x, y, gui, font, "", Color.WHITE, 1);
+		this(x, y, w, h, gui, font, "");
 	}
 	
-	public GUIText(float x, float y, GUI gui, BitmapFont font, String text, Color color, float scale)
+	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font, String text)
 	{
-		this(x, y, gui, font, text, color, scale, Alignment.CENTER);
+		this(x, y, w, h, gui, font, text, Alignment.CENTER);
 	}
 	
-	public GUIText(float x, float y, GUI gui, BitmapFont font, String text, Color color, float scale, Alignment align)
+	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font, String text, Alignment alignment)
 	{
-		super(x, y, text, gui, font, color);
+		super(x, y, text, gui, font);
 		
-		this.alignment = align;
-		this.scale = scale;
+		if(w <= 0)
+			w = getTransform().getWidth();
+		if(h <= 0)
+			h = getTransform().getHeight();
+		
+		getTransform().setWidth(w);
+		getTransform().setHeight(h);
+		
+		setAlignment(alignment);
 	}
 
 	@Override
@@ -50,17 +55,6 @@ public class GUIText extends GUITextElement
 	@Override
 	public void drawSprites(SpriteBatch batch)
 	{
-		float x = getTransform().getX();
-		float y = getTransform().getY();
-		
-		if(alignment == Alignment.CENTER)
-			x -= getTextBox().getWidth() * scale / 2;
-		else if(alignment == Alignment.LEFT)
-			x -= getTextBox().getWidth() * scale;
-		
-		getFont().getData().setScale(scale);
-		
-		getTextBox().setBounds(x, y, getTransform().getWidth(), getTransform().getHeight());
 		getTextBox().draw(batch, 1);
 	}
 	
@@ -68,5 +62,44 @@ public class GUIText extends GUITextElement
 	public void dispose()
 	{
 		getFont().dispose();
+	}
+	
+	public Alignment getAlignment() { return alignment; }
+	public void setAlignment(Alignment alignment)
+	{
+		if(alignment == null)
+			setAlignment(Alignment.CENTER);
+		
+		float x = getTransform().getX();
+		float y = getTransform().getY();
+		
+		if(getAlignment() != null)
+		{			
+			if(alignment.center())
+				x -= getTransform().getWidth() / 2;
+			else if(alignment.right())
+				x -= getTransform().getWidth();
+			
+			if(alignment.bottom())
+				y += getTransform().getHeight() / 2 - getLayout().height / 2;
+			if(alignment.top())
+				y -= getTransform().getHeight() / 2 - getLayout().height / 2;
+		}
+		
+		this.alignment = alignment;
+		
+		if(alignment.center())
+			x += getTransform().getWidth() / 2 - getLayout().width / 2;
+		else if(alignment.right())
+			x += getTransform().getWidth() - getLayout().width;
+		
+		if(alignment.bottom())
+			y -= getTransform().getHeight() / 2 - getLayout().height / 2;
+		if(alignment.top())
+			y += getTransform().getHeight() / 2 - getLayout().height / 2;
+		
+		getTextBox().setBounds(x, y, getTransform().getWidth(), getTransform().getHeight());
+		
+		this.alignment = alignment;
 	}
 }

@@ -19,7 +19,7 @@ public class GUIButton extends GUITextElement implements IInteractable
 	
 	public GUIButton(Transform transform, GUI gui, BitmapFont font, Callback onClick, String text)
 	{
-		super(transform, text, gui, font, Color.BLACK);
+		super(transform, text, gui, font);
 		
 		this.onClick = onClick;
 	}

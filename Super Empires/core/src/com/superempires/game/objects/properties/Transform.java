@@ -31,6 +31,12 @@ public class Transform implements Cloneable
 	@Override
 	public Transform clone() { return new Transform(x, y, width, height); }
 	
+	@Override
+	public String toString()
+	{
+		return "Transform: [(" + x + ", " + y + ") " + width + " x " + height + "]";
+	}
+	
 	public float getX() { return x; }
 	public void setX(float x) { this.x = x; }
 
@@ -39,4 +45,7 @@ public class Transform implements Cloneable
 	
 	public float getWidth() { return width; }
 	public float getHeight() { return height; }
+
+	public void setWidth(float w) { this.width = w; }
+	public void setHeight(float h) { this.height = h; }
 }

@@ -18,6 +18,7 @@ public abstract class GUIElement implements IDrawable
 	
 	public abstract void fontChangedEvent(BitmapFont f);
 	
+	public void setTransform(float x, float y, float width, float height) { setTransform(new Transform(x, y, width, height)); }
 	public void setTransform(Transform t) { this.transform = t; }
 	public Transform getTransform() { return transform; }
 

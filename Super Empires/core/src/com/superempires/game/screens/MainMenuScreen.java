@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.superempires.game.SuperEmpires;
 import com.superempires.game.gui.Alignment;
 import com.superempires.game.gui.GUI;
 import com.superempires.game.gui.GUIButton;
 import com.superempires.game.gui.GUIText;
 import com.superempires.game.objects.properties.Transform;
+import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
 import com.superempires.game.util.Callback;
@@ -30,11 +31,20 @@ public class MainMenuScreen implements Screen
 		
 		gui = new GUI();
 		
+		FreeTypeFontParameter params = new FreeTypeFontParameter();
+		params.size = 48 * 2;
+		params.color = Color.RED;
+		
+		FreeTypeFontParameter params2 = new FreeTypeFontParameter();
+		params2.color = Color.BLACK;
+		
+		final float WINDOW_BORDER = 100;
+		
 		gui.addElement(
 				new GUIButton(
-					new Transform(-50, -20, 100, 40), 
+					new Transform(-50, -Gdx.graphics.getHeight() / 2 + WINDOW_BORDER, 100, 40), 
 					gui,
-					new BitmapFont(),
+					GameRegistry.getFont("font-default", params2),
 					new Callback()
 					{
 						@Override
@@ -49,7 +59,9 @@ public class MainMenuScreen implements Screen
 					}, 
 					"PLAY"));
 		
-		gui.addElement(new GUIText(0, 200, gui, new BitmapFont(), "Super Empires!", Color.RED, 5, Alignment.CENTER));
+		gui.addElement(new GUIText(-Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2 - WINDOW_BORDER, gui, 
+				GameRegistry.getFont("font-title", params), "Super Empires", 
+				Alignment.CENTER_TOP));
 		
 		cam = new FancyCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}

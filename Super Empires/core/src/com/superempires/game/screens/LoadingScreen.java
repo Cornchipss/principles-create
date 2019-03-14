@@ -2,14 +2,14 @@ package com.superempires.game.screens;
 
 import com.badlogic.gdx.Screen;
 import com.superempires.game.SuperEmpires;
-import com.superempires.game.registry.Textures;
+import com.superempires.game.registry.Registerer;
 
 public class LoadingScreen implements Screen
 {
 	@Override
 	public void show()
 	{
-		Textures.registerAll();
+		Registerer.registerAll();
 		
 		SuperEmpires.swapScreen(new MainMenuScreen());
 	}

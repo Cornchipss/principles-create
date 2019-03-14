@@ -1,5 +1,6 @@
 package com.superempires.game.map.biome;
 
+import com.badlogic.gdx.graphics.Color;
 import com.superempires.game.map.buildings.natural.Tree;
 import com.superempires.game.map.tiling.PlainsTile;
 import com.superempires.game.map.tiling.SnowTile;
@@ -14,15 +15,22 @@ public class ForestBiome extends Biome
 		if(Biome.isFreezing(temperature))
 		{
 			tiles[y][x] = new SnowTile(x, y, temperature, this);
+			
+			genTree(tiles, x, y, Color.WHITE, rdm);
 		}
 		else
 		{
 			tiles[y][x] = new PlainsTile(x, y, temperature, this);
 			
-			if(rdm.getRandom().nextBoolean())
-			{
-				tiles[y][x].setBuilding(new Tree(tiles[y][x].getTransform()));
-			}
+			genTree(tiles, x, y, Color.GREEN, rdm);
+		}
+	}
+	
+	protected void genTree(Tile[][] tiles, int x, int y, Color c, RNG rdm)
+	{
+		if(rdm.getRandom().nextInt((int)(rdm.getNoise().noise(x * 0.004, y * 0.004) * 100 + 100.5)) > 75)
+		{
+			tiles[y][x].setBuilding(new Tree(tiles[y][x].getTransform(), c));
 		}
 	}
 
