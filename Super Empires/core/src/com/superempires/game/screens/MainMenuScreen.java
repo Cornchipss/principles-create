@@ -42,7 +42,7 @@ public class MainMenuScreen implements Screen
 		
 		gui.addElement(
 				new GUIButton(
-					new Transform(-50, -Gdx.graphics.getHeight() / 2 + WINDOW_BORDER, 100, 40), 
+					new Transform(-250 / 2, -Gdx.graphics.getHeight() / 2 + WINDOW_BORDER, 250, 40), 
 					gui,
 					GameRegistry.getFont("font-default", params2),
 					new Callback()
@@ -57,7 +57,7 @@ public class MainMenuScreen implements Screen
 							genScreen.generate();
 						}
 					}, 
-					"PLAY"));
+					"Generate World"));
 		
 		gui.addElement(new GUIText(-Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2 - WINDOW_BORDER, gui, 
 				GameRegistry.getFont("font-title", params), "Super Empires", 

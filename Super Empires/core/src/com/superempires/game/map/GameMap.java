@@ -2,10 +2,8 @@ package com.superempires.game.map;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -59,7 +57,7 @@ public class GameMap
 		int mouseY = Gdx.input.getY();
 		
 		if(mouseX >= 0 && mouseX <= Gdx.graphics.getWidth() && mouseY >= 0 && mouseY <= Gdx.graphics.getHeight())
-		{		
+		{
 		    Vector2 mouseWorldCoords = cam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
 		    
 			Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
@@ -82,7 +80,7 @@ public class GameMap
 					if(highlight)
 						hoveredTile.setHighlighted(false);
 				}
-					
+				
 				hoveredTile = getTile(index.x, index.y);
 				
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
@@ -130,49 +128,41 @@ public class GameMap
 	
 	/**
 	 * Finds a bunch of tiles in a circleish thing
-	 * @param indexX
-	 * @param indexY
-	 * @param walkTime
+	 * @param indexX The x index
+	 * @param indexY The y index
+	 * @param walkTime The "time" they have to walk
 	 */
 	public Map<Tile, Path> pathfindTiles(int indexX, int indexY, double walkTime)
 	{
 		Map<Tile, Path> paths = new HashMap<>();
 		List<Path> currentPaths = new ArrayList<>();
 		
-		Tile firstTile = getTile(indexX, indexY);
-		Path first = new Path(firstTile, 0);
-		
-		currentPaths.add(first);
+		currentPaths.add(new Path(getTile(indexX, indexY), 0));
 		
 		while(currentPaths.size() != 0)
 		{
-			Set<Path> deadPaths = new HashSet<>();
-			
 			List<Path> newPaths = new ArrayList<>();
 			
 			for(Path path : currentPaths)
 			{
-				if(!deadPaths.contains(path))
+				Vector2i index = getTileIndex(path.getTile());
+				
+				Tile[] tiles = getAdjacentTiles(index.x, index.y);
+				
+				for(Tile tile : tiles)
 				{
-					Vector2i index = getTileIndex(path.getTile());
-					
-					Tile[] tiles = getAdjacentTiles(index.x, index.y, 1);
-					
-					for(Tile tile : tiles)
+					if(tile != null && tile.isWalkable())
 					{
-						if(tile != null && tile.isWalkable())
+						double newTime = path.getTravelTime() + tile.getTravelTime();
+						
+						if(newTime <= walkTime)
 						{
-							double newTime = path.getTravelTime() + tile.getTravelTime();
-							
-							if(newTime <= walkTime)
+							if(!paths.containsKey(tile))
 							{
-								if(!paths.containsKey(tile))
-								{
-									Path child = path.giveBirth(tile, newTime);
-									newPaths.add(child);
-									
-									paths.put(tile, child);
-								}
+								Path child = path.giveBirth(tile, newTime);
+								newPaths.add(child);
+								
+								paths.put(tile, child);
 							}
 						}
 					}
@@ -194,26 +184,27 @@ public class GameMap
 	
 	/**
 	 * Gets adjacent tiles in a semi-quick manner
-	 * This only works 100% if the radius is 3 or below.
+	 * This only works if the radius is 3 or below.
 	 * @param indexX The index x to check around
 	 * @param indexY The index y to check around
 	 * @param radius The radius of the search (best if 3 or below)
 	 * @return The tiles in an array that are surrounding said index.
 	 */
-	public Tile[] getAdjacentTiles(int indexX, int indexY, int radius)
-	{		
+	public Tile[] getAdjacentTiles(int indexX, int indexY)
+	{
+		final int RADIUS = 1;
+		
 		int tiles = 0;
-		for(int i = 0; i <= radius; i++)
+		for(int i = 0; i <= RADIUS; i++)
 			tiles += 6 * i;
 		
 		Tile[] toReturn = new Tile[tiles];
 		
 		int i = 0;
 		
-		for(int dX = -radius; dX <= radius; dX++)
+		for(int dX = -RADIUS; dX <= RADIUS; dX++)
 		{
-			//for(int dY = (odd ? -radius : (dX != 0 ? 0 : -radius)); dY <= (odd ? (dX != 0 ? 0 : radius) : radius); dY++)
-			for(int dY = -radius; dY <= radius; dY++)
+			for(int dY = -RADIUS; dY <= RADIUS; dY++)
 			{
 				if(dX != 0 || dY != 0)
 				{
@@ -222,7 +213,7 @@ public class GameMap
 					if(within(ix, iy))
 					{
 						if(Helper.distanceSquared(getTile(indexX, indexY).getTransform().getCenter(), 
-								getTile(ix, iy).getTransform().getCenter()) <= (radius * Tile.DIMENSIONS) * (radius * Tile.DIMENSIONS))
+								getTile(ix, iy).getTransform().getCenter()) <= (RADIUS * Tile.DIMENSIONS) * (RADIUS * Tile.DIMENSIONS))
 						{
 							toReturn[i] = getTile(ix, iy);
 							i++;
