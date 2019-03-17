@@ -35,6 +35,7 @@ public class FancyCamera
 	
 	public Vector2 screenToWorldCoords(float x, float y)
 	{
+		// Taken from stack overflow (https://gamedev.stackexchange.com/questions/79108/convert-screen-coords-to-world-coords-libgdx)
 		Vector3 unproj = cam.unproject(new Vector3(x, y, 0));
 		
 		return new Vector2(unproj.x, unproj.y);

@@ -87,7 +87,7 @@ public class GameMap
 				
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 				{
-					final double RADIUS = 1.5;
+					final double RADIUS = 10.5;
 					
 					if(selectedTile != null)
 					{

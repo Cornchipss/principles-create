@@ -1,7 +1,5 @@
 package com.superempires.game.map.tiling;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonSprite;
@@ -21,7 +19,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	/**
 	 * Dimensions (width & height) of each tile in pixels
 	 */
-	public static final float DIMENSIONS = 64;
+	public static final float DIMENSIONS = 8;
 	
 	private static final float[] vertices = new float[]
 	{
@@ -31,7 +29,6 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		DIMENSIONS * 3 / 4, DIMENSIONS    ,
 		DIMENSIONS     / 4, DIMENSIONS    ,
 		0                 , DIMENSIONS / 2,
-		DIMENSIONS     / 4, 0 // This last one is for line drawing
 	};
 	
 	private static final short[] indicies = new short[]
@@ -87,17 +84,17 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	@Override
 	public void drawLines(ShapeRenderer batch)
 	{
-		Gdx.gl.glLineWidth(2);
-		
-		for(int i = 0; i + 2 < vertices.length; i += 2)
-		{
-			batch.line(
-					vertices[i] + getTransform().getX(), 
-					vertices[i + 1] + getTransform().getY(), 
-					vertices[i + 2] + getTransform().getX(), 
-					vertices[i + 3] + getTransform().getY(), 
-					Color.BLACK, Color.BLACK);
-		}
+//		Gdx.gl.glLineWidth(2);
+//		
+//		for(int i = 0; i + 2 < vertices.length; i += 2)
+//		{
+//			batch.line(
+//					vertices[i] + getTransform().getX(), 
+//					vertices[i + 1] + getTransform().getY(), 
+//					vertices[i + 2] + getTransform().getX(), 
+//					vertices[i + 3] + getTransform().getY(), 
+//					Color.BLACK, Color.BLACK);
+//		}
 		
 		if(building != null)
 			building.drawLines(batch);

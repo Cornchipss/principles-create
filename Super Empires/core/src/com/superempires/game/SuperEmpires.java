@@ -28,20 +28,15 @@ public class SuperEmpires extends Game
 	@Override
 	public void setScreen(Screen screen)
 	{
-		throw new RuntimeException("Screen cannot be set directly; Use SuperEmpires.swapScreen");
-	}
-
-	private void setScrn(Screen screen)
-	{
 		if(getScreen() != null)
 			getScreen().dispose();
 
 		super.setScreen(screen);
 	}
-
+	
 	public static void swapScreen(Screen screen)
 	{
-		getSuperEmpires().setScrn(screen);
+		getSuperEmpires().setScreen(screen);
 	}
 
 	public static SuperEmpires getSuperEmpires() { return instance; }

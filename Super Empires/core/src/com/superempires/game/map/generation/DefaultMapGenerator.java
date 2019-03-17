@@ -1,6 +1,5 @@
 package com.superempires.game.map.generation;
 
-import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.biome.BeachBiome;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.biome.CragBiome;
@@ -17,14 +16,14 @@ import libs.noise.SimplexNoise;
 
 public class DefaultMapGenerator extends MapGenerator
 {
-	private final static Biome OCEAN = new OceanBiome();
-	private final static Biome BEACH = new BeachBiome();
-	private final static Biome CRAG = new CragBiome();
-	private final static Biome DESERT = new DesertBiome();
-	private final static Biome PLAINS = new PlainsBiome();
-	private final static Biome FOREST = new ForestBiome();
+	private static final Biome OCEAN = new OceanBiome();
+	private static final Biome BEACH = new BeachBiome();
+	private static final Biome CRAG = new CragBiome();
+	private static final Biome DESERT = new DesertBiome();
+	private static final Biome PLAINS = new PlainsBiome();
+	private static final Biome FOREST = new ForestBiome();
 
-	private final static Biome[][] table =
+	private static final Biome[][] table =
 	{
 		{
 			OCEAN
@@ -58,7 +57,7 @@ public class DefaultMapGenerator extends MapGenerator
 		}
 	};
 
-	private static double[] elevationRanges =
+	private static final double[] elevationRanges =
 		{
 				2,
 				2,
@@ -87,18 +86,11 @@ public class DefaultMapGenerator extends MapGenerator
 		
 		SimplexNoise temperatureGenerator = new SimplexNoise(seed * 3);
 		SimplexNoise elevationGenerator = new SimplexNoise(seed);
-		SimplexNoise humidtyGenerator = new SimplexNoise(seed * 2); // * 2 is arbitrary, should be replaced later with something slightly more meaningful
+		SimplexNoise humidtyGenerator = new SimplexNoise(seed * 2);
 
-		double scale = 0.01;
+		final double scale = 0.01;
 
 		setText("Generating Biomes");
-		
-		// For Pi day (3/14/19)
-		float radius = (float)(tiles[0].length * 0.75 * Tile.DIMENSIONS + tiles.length * 0.5 * Tile.DIMENSIONS) / 2f;
-		Vector2 center = new Vector2((float)(0.75 * tiles[0].length * Tile.DIMENSIONS), (float)(0.5 * tiles.length * Tile.DIMENSIONS));
-		
-		double within = 0;
-		double without = 0;
 		
 		for(int y = 0; y < tiles.length; y++)
 		{
@@ -129,24 +121,13 @@ public class DefaultMapGenerator extends MapGenerator
 				}
 				else
 					b = table[0][(int)(humidity / (100 / table[0].length + 0.5))];
-
-				double temperature = (temperatureGenerator.noise(x * scale, y * scale) + 0.8) * 50;
-
+				
+				double temperature = (temperatureGenerator.noise(x * scale * 0.3, y * scale * 0.3) + 1) * 50;
+				
 				b.generateTile(tiles, x, y, temperature, rng);
-				
-				float xx = x * 0.75f * Tile.DIMENSIONS, yy = y * Tile.DIMENSIONS - (x % 2) * Tile.DIMENSIONS / 2;
-				
-				// For Pi day (3/14/19)
-				if(Helper.distanceSquared(new Vector2(xx, yy), center) <= radius * radius)
-					within++;
-				else
-					without++;
 			}
 			
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);
 		}
-		
-		// For Pi day (3/14/19)
-		System.out.println("Pi is approximately: " + within / without);
 	}
 }

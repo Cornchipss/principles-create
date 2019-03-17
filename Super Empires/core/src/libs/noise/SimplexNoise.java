@@ -2,24 +2,37 @@ package libs.noise;
 
 import java.util.Random;
 
-/*
+/**
+ * <p>
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.
+ * </p>
  *
+ * <p>
  * Based on example code by Stefan Gustavson (stegu@itn.liu.se).
  * Optimisations by Peter Eastman (peastman@drizzle.stanford.edu).
  * Better rank ordering method by Stefan Gustavson in 2012.
- *
+ * </p>
+ * 
+ * <p>
  * This could be speeded up even further, but it's useful as it is.
- *
+ * </p>
+ * 
+ * <p>
  * Version 2012-03-09
- *
+ * </p>
+ * 
+ * <p>
  * This code was placed in the public domain by its original author,
  * Stefan Gustavson. You may use it as you see fit, but
  * attribution is appreciated.
+ * </p>
  * 
- * NOTICE
- * This has been modified by me (Anthony Tornetta) on 3/6/2019 to allow for the use of seeds
- *
+ * <h1>NOTICE</h1>
+ * <p>
+ * This has been modified by me (Anthony Tornetta) on 3/6/2019 to allow for the use of seeds.
+ * </p>
+ * @author Stefan Gustavson
+ * @author Anthony Tornetta
  */
 
 public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
