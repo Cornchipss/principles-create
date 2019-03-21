@@ -2,6 +2,7 @@ package com.superempires.game.map.generation;
 
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.screens.WorldGenerationScreen;
+import com.superempires.game.util.Vector2i;
 
 public abstract class MapGenerator
 {	
@@ -31,7 +32,7 @@ public abstract class MapGenerator
 	 * @param tiles The tiles array to fill
 	 * @param seed The seed to use
 	 */
-	public abstract void generateMap(final Tile[][] tiles, long seed);
+	public abstract Vector2i generateMap(final Tile[][] tiles, long seed);
 	
 	public WorldGenerationScreen getScreen() { return screen; }
 }

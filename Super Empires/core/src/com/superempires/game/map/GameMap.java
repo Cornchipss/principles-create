@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.map.pathing.Path;
 import com.superempires.game.map.tiling.Tile;
-import com.superempires.game.map.troops.Unit;
+import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
@@ -32,16 +32,28 @@ public class GameMap
 	
 	private Tile hoveredTile, selectedTile;
 	
-	public GameMap(Tile[][] tiles)
+	private Vector2i startPosition;
+	
+	public GameMap(Tile[][] tiles, Vector2i startPosition)
 	{
 		WIDTH = tiles[0].length;
 		HEIGHT = tiles.length;
 		
+		this.startPosition = startPosition;
 		this.tiles = tiles;
 	}
 	
 	public void update(FancyCamera cam, float delta)
 	{
+		if(startPosition != null)
+		{
+			Tile tile = tiles[startPosition.y][startPosition.x];
+			
+			cam.position.set(tile.getTransform().getX(), tile.getTransform().getY(), 0);
+			
+			startPosition = null;
+		}
+		
 	    Transform bounds = getBounds();
 	    
 	    cam.position.set(
@@ -56,6 +68,7 @@ public class GameMap
 		int mouseX = Gdx.input.getX();
 		int mouseY = Gdx.input.getY();
 		
+		// Mouse within window
 		if(mouseX >= 0 && mouseX <= Gdx.graphics.getWidth() && mouseY >= 0 && mouseY <= Gdx.graphics.getHeight())
 		{
 		    Vector2 mouseWorldCoords = cam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
@@ -83,10 +96,8 @@ public class GameMap
 				
 				hoveredTile = getTile(index.x, index.y);
 				
-				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) || Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 				{
-					final double RADIUS = 10.5;
-					
 					if(selectedTile != null)
 					{
 						selectedTile.setSelected(false);
@@ -99,20 +110,25 @@ public class GameMap
 						selectedTiles = new Tile[0];
 					}
 					
-					(selectedTile = hoveredTile).setSelected(true);
-					
-					Map<Tile, Path> paths = pathfindTiles(index.x, index.y, RADIUS);
-					
-					selectedTiles = new Tile[paths.size()];
-					
-					int i = 0;
-					
-					for(Tile t : paths.keySet())
-					{
-						t.setHighlighted(true);
+					if(!Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+					{					
+						(selectedTile = hoveredTile).setSelected(true);
 						
-						selectedTiles[i] = t;
-						i++;
+						if(selectedTile.getUnit() != null)
+						{
+							Map<Tile, Path> paths = pathfindTiles(index.x, index.y, selectedTile.getUnit().getTravelRadius());
+							
+							selectedTiles = new Tile[paths.size()];
+							
+							int i = 0;
+							for(Tile t : paths.keySet())
+							{
+								t.setHighlighted(true);
+								
+								selectedTiles[i] = t;
+								i++;
+							}
+						}
 					}
 				}
 				else

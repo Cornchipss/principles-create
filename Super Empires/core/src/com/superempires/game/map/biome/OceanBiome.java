@@ -30,4 +30,10 @@ public class OceanBiome extends Biome
 	{
 		return true;
 	}
+	
+	@Override
+	public BiomeType getType()
+	{
+		return BiomeType.WATER;
+	}
 }

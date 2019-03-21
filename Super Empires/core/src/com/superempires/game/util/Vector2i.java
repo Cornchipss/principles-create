@@ -52,4 +52,10 @@ public class Vector2i
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Vector2i[" + x + ", " + y + "]";
+	}
 }

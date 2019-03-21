@@ -19,4 +19,6 @@ public abstract class Biome
 	}
 	
 	public abstract boolean isAcceptableTemperature(double temperature);
+	
+	public abstract BiomeType getType();
 }

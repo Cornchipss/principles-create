@@ -2,15 +2,18 @@ package com.superempires.game.map.generation;
 
 import com.superempires.game.map.biome.BeachBiome;
 import com.superempires.game.map.biome.Biome;
+import com.superempires.game.map.biome.BiomeType;
 import com.superempires.game.map.biome.CragBiome;
 import com.superempires.game.map.biome.DesertBiome;
 import com.superempires.game.map.biome.ForestBiome;
 import com.superempires.game.map.biome.OceanBiome;
 import com.superempires.game.map.biome.PlainsBiome;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.map.units.ColonizationUnit;
 import com.superempires.game.screens.WorldGenerationScreen;
 import com.superempires.game.util.Helper;
 import com.superempires.game.util.RNG;
+import com.superempires.game.util.Vector2i;
 
 import libs.noise.SimplexNoise;
 
@@ -78,7 +81,7 @@ public class DefaultMapGenerator extends MapGenerator
 	}
 	
 	@Override
-	public void generateMap(final Tile[][] tiles, long seed)
+	public Vector2i generateMap(final Tile[][] tiles, long seed)
 	{
 		setText("Pre-Biome Generation Init");
 
@@ -129,5 +132,18 @@ public class DefaultMapGenerator extends MapGenerator
 			
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);
 		}
+		
+		int spawnX = -1, spawnY = -1;
+		do
+		{
+			spawnX = rng.getRandom().nextInt(tiles[0].length);
+			spawnY = rng.getRandom().nextInt(tiles.length);
+		} while(tiles[spawnY][spawnX].getBiome().getType() == BiomeType.WATER);
+		
+		tiles[spawnY][spawnX].setUnit(new ColonizationUnit(tiles[spawnY][spawnX].getTransform()));
+		
+		System.out.println(spawnX + " , " + spawnY);
+		
+		return new Vector2i(spawnX, spawnY);
 	}
 }

@@ -15,6 +15,7 @@ import com.superempires.game.map.GameMap;
 import com.superempires.game.map.generation.DefaultMapGenerator;
 import com.superempires.game.map.generation.MapGenerator;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.util.Vector2i;
 
 public class WorldGenerationScreen implements Screen
 {
@@ -25,6 +26,8 @@ public class WorldGenerationScreen implements Screen
 	private OrthographicCamera cam;
 
 	private volatile boolean done = false;
+	
+	private volatile Vector2i startPosition;
 
 	private final long SEED;
 	private final Tile[][] TILES;
@@ -54,7 +57,7 @@ public class WorldGenerationScreen implements Screen
 	{
 		if(done())
 		{
-			SuperEmpires.swapScreen(new GameScreen(new GameMap(getTiles())));
+			SuperEmpires.swapScreen(new GameScreen(new GameMap(getTiles(), startPosition)));
 		}
 		else
 		{
@@ -144,7 +147,7 @@ public class WorldGenerationScreen implements Screen
 
 				setText("Registering Biomes");
 
-				gen.generateMap(TILES, SEED);
+				startPosition = gen.generateMap(TILES, SEED);
 
 				done = true;
 			}
@@ -164,6 +167,7 @@ public class WorldGenerationScreen implements Screen
 	}
 
 	public boolean done() { return done; }
-
+	public Vector2i getStartPosition() { return startPosition; }
+	
 	public Tile[][] getTiles() { return TILES; }
 }

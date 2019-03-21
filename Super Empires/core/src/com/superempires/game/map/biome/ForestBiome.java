@@ -41,4 +41,10 @@ public class ForestBiome extends Biome
 	{
 		return false;
 	}
+	
+	@Override
+	public BiomeType getType()
+	{
+		return BiomeType.LAND;
+	}
 }

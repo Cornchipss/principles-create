@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.Building;
-import com.superempires.game.map.troops.Unit;
+import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.PhysicalObject;
 import com.superempires.game.render.IDrawable;
 import com.superempires.game.util.Colors;
@@ -19,7 +19,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	/**
 	 * Dimensions (width & height) of each tile in pixels
 	 */
-	public static final float DIMENSIONS = 8;
+	public static final float DIMENSIONS = 64;
 	
 	private static final float[] vertices = new float[]
 	{

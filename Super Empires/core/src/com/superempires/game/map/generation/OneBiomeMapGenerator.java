@@ -2,8 +2,10 @@ package com.superempires.game.map.generation;
 
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.map.units.ColonizationUnit;
 import com.superempires.game.screens.WorldGenerationScreen;
 import com.superempires.game.util.RNG;
+import com.superempires.game.util.Vector2i;
 
 public class OneBiomeMapGenerator extends MapGenerator
 {
@@ -17,7 +19,7 @@ public class OneBiomeMapGenerator extends MapGenerator
 	}
 
 	@Override
-	public void generateMap(Tile[][] tiles, long seed)
+	public Vector2i generateMap(Tile[][] tiles, long seed)
 	{
 		RNG rdm = new RNG(seed);
 		
@@ -28,5 +30,14 @@ public class OneBiomeMapGenerator extends MapGenerator
 				biome.generateTile(tiles, x, y, 64, rdm);
 			}
 		}
+		
+		int spawnX, spawnY;
+		
+		spawnX = rdm.getRandom().nextInt(tiles[0].length);
+		spawnY = rdm.getRandom().nextInt(tiles.length);
+		
+		tiles[spawnY][spawnX].setUnit(new ColonizationUnit(tiles[spawnY][spawnX].getTransform()));
+		
+		return new Vector2i(spawnX, spawnY);
 	}
 }

@@ -28,4 +28,10 @@ public class DesertBiome extends Biome
 	{
 		return 90 <= temperature && temperature <= 130;
 	}
+
+	@Override
+	public BiomeType getType()
+	{
+		return BiomeType.LAND;
+	}
 }

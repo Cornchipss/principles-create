@@ -29,4 +29,10 @@ public class CragBiome extends Biome
 		return temperature >= 100;
 	}
 
+	@Override
+	public BiomeType getType()
+	{
+		return BiomeType.LAND;
+	}
+
 }

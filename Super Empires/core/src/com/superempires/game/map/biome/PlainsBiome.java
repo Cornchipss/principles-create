@@ -47,4 +47,10 @@ public class PlainsBiome extends Biome
 	{
 		return 60 <= temperature && temperature <= 90;
 	}
+	
+	@Override
+	public BiomeType getType()
+	{
+		return BiomeType.LAND;
+	}
 }
