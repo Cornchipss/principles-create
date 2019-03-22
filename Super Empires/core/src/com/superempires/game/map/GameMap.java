@@ -75,31 +75,39 @@ public class GameMap
 		    
 			Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
 			
+			boolean isInSelectedTiles = false;
+			
 			if(within(index.x, index.y))
 			{
 				if(hoveredTile != null)
-				{
-					boolean highlight = true;
-					
+				{					
 					for(Tile t : selectedTiles)
 					{
 						if(t.equals(hoveredTile))
 						{
-							highlight = false;
+							isInSelectedTiles = true;
 							break;
 						}
 					}
 					
-					if(highlight)
+					if(!isInSelectedTiles)
 						hoveredTile.setHighlighted(false);
 				}
 				
 				hoveredTile = getTile(index.x, index.y);
 				
+				boolean unitSet = false;
+				
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) || Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 				{
 					if(selectedTile != null)
 					{
+						if(isInSelectedTiles && selectedTile.getUnit() != null && hoveredTile.canHoldUnit(selectedTile.getUnit()))
+						{
+							hoveredTile.setUnit(selectedTile.getUnit());
+							unitSet = true;
+						}
+						
 						selectedTile.setSelected(false);
 						
 						for(Tile t : selectedTiles)
@@ -110,8 +118,8 @@ public class GameMap
 						selectedTiles = new Tile[0];
 					}
 					
-					if(!Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
-					{					
+					if(!unitSet && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+					{
 						(selectedTile = hoveredTile).setSelected(true);
 						
 						if(selectedTile.getUnit() != null)

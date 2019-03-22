@@ -162,6 +162,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 			this.unit.setTile(null);
 		
 		this.unit = unit;
+		unit.setTransform(getTransform());
 		unit.setTile(this);
 	}
 	
@@ -189,4 +190,6 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	 * @return true if it can be sailed on, false if not
 	 */
 	public abstract boolean isSailable();
+
+	public boolean canHoldUnit(Unit unit) { return this.getUnit() == null; }
 }
