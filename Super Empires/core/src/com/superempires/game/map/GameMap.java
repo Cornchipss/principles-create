@@ -43,6 +43,9 @@ public class GameMap
 		this.tiles = tiles;
 	}
 	
+	private Map<Unit, Double> radiusRemaining = new HashMap<>();
+	private Map<Tile, Path> paths;
+	
 	public void update(FancyCamera cam, float delta)
 	{
 		if(startPosition != null)
@@ -75,56 +78,52 @@ public class GameMap
 		    
 			Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
 			
-			boolean isInSelectedTiles = false;
+			boolean isInSelectedRange = isInSelectedRange(hoveredTile);
 			
 			if(within(index.x, index.y))
 			{
-				if(hoveredTile != null)
-				{					
-					for(Tile t : selectedTiles)
-					{
-						if(t.equals(hoveredTile))
-						{
-							isInSelectedTiles = true;
-							break;
-						}
-					}
-					
-					if(!isInSelectedTiles)
-						hoveredTile.setHighlighted(false);
-				}
+				// Handles the old highlighted tile
+				if(hoveredTile != null && !isInSelectedRange)
+					hoveredTile.setHighlighted(false);
 				
+				// Gets the new highlighted tile
 				hoveredTile = getTile(index.x, index.y);
 				
-				boolean unitSet = false;
 				
-				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) || Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) 
+						|| Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 				{
 					if(selectedTile != null)
 					{
-						if(isInSelectedTiles && selectedTile.getUnit() != null && hoveredTile.canHoldUnit(selectedTile.getUnit()))
+						if(isInSelectedRange && selectedTile.getUnit() != null && hoveredTile.canHoldUnit(selectedTile.getUnit()))
 						{
 							hoveredTile.setUnit(selectedTile.getUnit());
-							unitSet = true;
+							
+							radiusRemaining.put(selectedTile.getUnit(), 
+									radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0) + 
+									paths.get(hoveredTile).getTravelTime());
+							
+							selectedTile.setUnit(null);
+							
+							System.out.println(radiusRemaining.get(hoveredTile.getUnit()) + " vs " + hoveredTile.getUnit().getTravelRadius());
 						}
 						
-						selectedTile.setSelected(false);
-						
-						for(Tile t : selectedTiles)
-						{
-							t.setHighlighted(false);
-						}
-						
-						selectedTiles = new Tile[0];
+						clearSelectedTiles();
 					}
 					
-					if(!unitSet && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+					if(!Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 					{
-						(selectedTile = hoveredTile).setSelected(true);
+						hoveredTile.setSelected(true);
+						selectedTile = hoveredTile; // They are selecting the one they're hovering
 						
+						// Show radius if it has a unit
 						if(selectedTile.getUnit() != null)
 						{
-							Map<Tile, Path> paths = pathfindTiles(index.x, index.y, selectedTile.getUnit().getTravelRadius());
+							paths = pathfindTiles(
+									index.x, 
+									index.y, 
+									selectedTile.getUnit().getTravelRadius() - 
+									radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0));
 							
 							selectedTiles = new Tile[paths.size()];
 							
@@ -142,6 +141,30 @@ public class GameMap
 				else
 					hoveredTile.setHighlighted(true);
 			}
+		}
+	}
+	
+	public boolean isInSelectedRange(Tile t)
+	{
+		if(selectedTiles != null && t != null)
+			for(Tile tile : selectedTiles)
+				if(tile.equals(t))
+					return true;
+		return false;
+	}
+	
+	public void clearSelectedTiles()
+	{
+		if(selectedTile != null)
+		{
+			selectedTile.setSelected(false);
+			
+			for(Tile t : selectedTiles)
+			{
+				t.setHighlighted(false);
+			}
+			
+			selectedTiles = new Tile[0];
 		}
 	}
 	

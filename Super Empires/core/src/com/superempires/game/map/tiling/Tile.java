@@ -162,8 +162,12 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 			this.unit.setTile(null);
 		
 		this.unit = unit;
-		unit.setTransform(getTransform());
-		unit.setTile(this);
+		
+		if(unit != null)
+		{
+			unit.setTransform(getTransform());
+			unit.setTile(this);
+		}
 	}
 	
 	public Biome getBiome() { return biome; }
@@ -192,4 +196,26 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	public abstract boolean isSailable();
 
 	public boolean canHoldUnit(Unit unit) { return this.getUnit() == null; }
+
+	@Override
+	public int hashCode()
+	{
+		return getTransform().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof Tile)
+		{
+			Tile t = (Tile)obj;
+			
+			if(t.getTransform() != null && t.getTransform().equals(getTransform()) || t.getTransform() == null && getTransform() == null)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }

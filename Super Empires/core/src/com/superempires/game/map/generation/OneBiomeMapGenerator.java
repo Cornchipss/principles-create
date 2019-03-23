@@ -23,12 +23,16 @@ public class OneBiomeMapGenerator extends MapGenerator
 	{
 		RNG rdm = new RNG(seed);
 		
+		setSubText("Generating tiles...");
+		
 		for(int y = 0; y < tiles.length; y++)
 		{
 			for(int x = 0; x < tiles.length; x++)
 			{
 				biome.generateTile(tiles, x, y, 64, rdm);
 			}
+			
+			setText("ROW: " + (y + 1) + " / " + tiles.length);
 		}
 		
 		int spawnX, spawnY;

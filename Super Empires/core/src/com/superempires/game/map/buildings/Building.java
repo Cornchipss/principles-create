@@ -8,10 +8,15 @@ import com.superempires.game.render.IDrawable;
 public abstract class Building extends PhysicalObject implements IDrawable
 {
 	private Tile tile;
+	private static int currentingBuildingID = 0;
+	
+	private int id;
 	
 	public Building(Transform t)
 	{
 		super(t);
+		
+		this.id = currentingBuildingID++;
 	}
 
 	public void setTile(Tile tile)
@@ -20,4 +25,24 @@ public abstract class Building extends PhysicalObject implements IDrawable
 	}
 	
 	public Tile getTile() { return tile; }
+	
+	@Override
+	public int hashCode()
+	{
+		return getId();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof Building)
+		{
+			Building building = (Building)obj;
+			
+			return building.getId() != getId();
+		}
+		return false;
+	}
+	
+	public int getId() { return id; }
 }

@@ -7,15 +7,40 @@ import com.superempires.game.render.IDrawable;
 
 public abstract class Unit extends PhysicalObject implements IDrawable
 {
+	private static int currentUnitId = 0;
 	private Tile tile;
+	private int id;
 	
 	public Unit(Transform transform)
 	{
 		super(transform);
+		
+		this.id = currentUnitId++;
 	}
 
 	public void setTile(Tile tile) { this.tile = tile; }
 	public Tile getTile() { return tile; }
 
 	public abstract double getTravelRadius();
+
+	@Override
+	public int hashCode()
+	{
+		return getId();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof Unit)
+		{
+			Unit unit = (Unit)obj;
+			
+			return unit.getId() == getId();
+		}
+		
+		return false;
+	}
+	
+	public int getId() { return id; }
 }
