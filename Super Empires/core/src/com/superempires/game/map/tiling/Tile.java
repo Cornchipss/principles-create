@@ -21,6 +21,10 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	 */
 	public static final float DIMENSIONS = 64;
 	
+	private static int currentTileId = 0;
+	
+	private int id;
+	
 	private static final float[] vertices = new float[]
 	{
 		DIMENSIONS     / 4, 0,
@@ -70,6 +74,8 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		
 		setHighlighted(false);
 		setSelected(false);
+		
+		this.id = currentTileId++;
 	}
 	
 	@Override
@@ -200,7 +206,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	@Override
 	public int hashCode()
 	{
-		return getTransform().hashCode();
+		return getId();
 	}
 
 	@Override
@@ -210,12 +216,11 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		{
 			Tile t = (Tile)obj;
 			
-			if(t.getTransform() != null && t.getTransform().equals(getTransform()) || t.getTransform() == null && getTransform() == null)
-			{
-				return true;
-			}
+			return t.getId() == getId();
 		}
 		
 		return false;
 	}
+	
+	public int getId() { return id; }
 }

@@ -46,6 +46,12 @@ public abstract class GUITextElement extends GUIElement
 		setLayout(new GlyphLayout(font, getText(), getColor(), getTransform().getWidth(), 1, false));
 	}
 	
+	@Override
+	public void update()
+	{		
+		getTextBox().setBounds(getTransform().getX(), getTransform().getY(), getTransform().getWidth(), getTransform().getHeight());
+	}
+	
 	public BitmapFont getFont() { return font; }
 	
 	public Label getTextBox() { return label; }

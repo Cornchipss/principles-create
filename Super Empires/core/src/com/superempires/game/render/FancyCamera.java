@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class FancyCamera
-{
+{	
 	private OrthographicCamera cam;
 	public final Vector3 position;
 	

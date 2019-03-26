@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 
 public class GUIText extends GUITextElement
 {
-	private Alignment alignment;
+	private int alignment;
 	
 	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font)
 	{
@@ -16,10 +17,10 @@ public class GUIText extends GUITextElement
 	
 	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font, String text)
 	{
-		this(x, y, w, h, gui, font, text, Alignment.CENTER);
+		this(x, y, w, h, gui, font, text, Align.center);
 	}
 	
-	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font, String text, Alignment alignment)
+	public GUIText(float x, float y, float w, float h, GUI gui, BitmapFont font, String text, int alignment)
 	{
 		super(x, y, text, gui, font);
 		
@@ -32,6 +33,8 @@ public class GUIText extends GUITextElement
 		getTransform().setHeight(h);
 		
 		setAlignment(alignment);
+		
+		update();
 	}
 
 	@Override
@@ -64,42 +67,15 @@ public class GUIText extends GUITextElement
 		getFont().dispose();
 	}
 	
-	public Alignment getAlignment() { return alignment; }
-	public void setAlignment(Alignment alignment)
+	public int getAlignment() { return alignment; }
+	public void setAlignment(int alignment)
 	{
-		if(alignment == null)
-			setAlignment(Alignment.CENTER);
-		
-		float x = getTransform().getX();
-		float y = getTransform().getY();
-		
-		if(getAlignment() != null)
-		{			
-			if(alignment.center())
-				x -= getTransform().getWidth() / 2;
-			else if(alignment.right())
-				x -= getTransform().getWidth();
-			
-			if(alignment.bottom())
-				y += getTransform().getHeight() / 2 - getLayout().height / 2;
-			if(alignment.top())
-				y -= getTransform().getHeight() / 2 - getLayout().height / 2;
+		if(alignment == -1)
+			setAlignment(Align.center);
+		else
+		{
+			getTextBox().setAlignment(alignment);
+			this.alignment = alignment;
 		}
-		
-		this.alignment = alignment;
-		
-		if(alignment.center())
-			x += getTransform().getWidth() / 2 - getLayout().width / 2;
-		else if(alignment.right())
-			x += getTransform().getWidth() - getLayout().width;
-		
-		if(alignment.bottom())
-			y -= getTransform().getHeight() / 2 - getLayout().height / 2;
-		if(alignment.top())
-			y += getTransform().getHeight() / 2 - getLayout().height / 2;
-		
-		getTextBox().setBounds(x, y, getTransform().getWidth(), getTransform().getHeight());
-		
-		this.alignment = alignment;
 	}
 }

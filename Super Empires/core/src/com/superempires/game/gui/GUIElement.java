@@ -30,6 +30,16 @@ public abstract class GUIElement implements IDrawable
 		GlyphLayout layout = new GlyphLayout(font, text);
 		return new Transform(x, y, layout.width, layout.height);
 	}
+	
+	public void onResize(float w, float h)
+	{
+		
+	}
+	
+	public void update()
+	{
+		
+	}
 
 	public void dispose()
 	{

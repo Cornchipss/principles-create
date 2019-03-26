@@ -5,8 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.utils.Align;
 import com.superempires.game.SuperEmpires;
-import com.superempires.game.gui.Alignment;
 import com.superempires.game.gui.GUI;
 import com.superempires.game.gui.GUIButton;
 import com.superempires.game.gui.GUIText;
@@ -14,6 +14,7 @@ import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
+import com.superempires.game.render.RenderQue;
 import com.superempires.game.util.Callback;
 
 public class MainMenuScreen implements Screen
@@ -40,9 +41,13 @@ public class MainMenuScreen implements Screen
 		
 		final float WINDOW_BORDER = 100;
 		
+		float w = Gdx.graphics.getWidth();
+		float h = Gdx.graphics.getHeight();
+		
 		gui.addElement(
-				new GUIButton(
-					new Transform(-250 / 2, -Gdx.graphics.getHeight() / 2 + WINDOW_BORDER, 250, 40), 
+				new GUIButton
+				(
+					new Transform(-125, -h / 2 + WINDOW_BORDER, 250, 40), 
 					gui,
 					GameRegistry.getFont("font-default", params2),
 					new Callback()
@@ -57,11 +62,19 @@ public class MainMenuScreen implements Screen
 							genScreen.generate();
 						}
 					}, 
-					"Generate World"));
+					"Generate World"),
+					RenderQue.MEDIUM);
 		
-		gui.addElement(new GUIText(-Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2 - WINDOW_BORDER, gui, 
-				GameRegistry.getFont("font-title", params), "Super Empires", 
-				Alignment.CENTER_TOP));
+		gui.addElement
+		(
+			new GUIText
+			(
+				-w / 2, 0, w, h / 2 - WINDOW_BORDER, 
+				gui, GameRegistry.getFont("font-title", params), "Super Empires", 
+				Align.center
+			), 
+			RenderQue.MEDIUM
+		);
 		
 		cam = new FancyCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
@@ -84,7 +97,7 @@ public class MainMenuScreen implements Screen
 				gui.update(delta, cam);
 				
 				if(batch != null)
-					batch.draw(gui);
+					gui.draw(batch);
 			}
 		}
 	}

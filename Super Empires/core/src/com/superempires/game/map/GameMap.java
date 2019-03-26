@@ -7,18 +7,30 @@ import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+import com.superempires.game.gui.GUI;
+import com.superempires.game.gui.GUIButton;
+import com.superempires.game.gui.GUIElement;
+import com.superempires.game.gui.GUIElementHolder;
+import com.superempires.game.gui.GUIText;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.map.pathing.Path;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.properties.Transform;
+import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
+import com.superempires.game.render.RenderQue;
+import com.superempires.game.util.Callback;
 import com.superempires.game.util.Helper;
 import com.superempires.game.util.Vector2i;
 
@@ -34,20 +46,95 @@ public class GameMap
 	
 	private Vector2i startPosition;
 	
+	private GUI gui;
+	
+	private RenderQue renderPhase;
+	
+	private GUIElementHolder holder;
+	
 	public GameMap(Tile[][] tiles, Vector2i startPosition)
 	{
 		WIDTH = tiles[0].length;
 		HEIGHT = tiles.length;
 		
-		this.startPosition = startPosition;
+		this.startPosition = startPosition = new Vector2i(0, 0);
 		this.tiles = tiles;
+		
+		gui = new GUI();
+		
+		float w = Gdx.graphics.getWidth();
+		float h = Gdx.graphics.getHeight();
+		
+		FreeTypeFontParameter param = new FreeTypeFontParameter();
+		param.color = Color.WHITE;
+		
+		holder = new GUIElementHolder(new Transform(-w / 2, -h / 2, w, 100), gui);
+		
+		holder.addElement
+		(
+			new GUIText
+			(
+				0, 80, w, 0, gui, 
+				GameRegistry.getFont("font-default", param), 
+				"Hello World!", 
+				Align.center
+			),
+			RenderQue.MEDIUM
+		).addElement
+		(
+			new GUIButton
+			(
+				new Transform(w / 2 - 100 / 2, 10, 100, 60), gui,
+				GameRegistry.getFont("font-default", param), 
+				new Callback()
+				{
+					@Override
+					public void run(Object... args)
+					{
+						System.out.println("123, Do Re Me, Baby You & Me!");
+					}
+				}, "ABC!"
+			),
+			RenderQue.MEDIUM
+		).setBackground(new Color(0, 0, 0, 0.2f));
+		
+		gui.addElement(holder, RenderQue.LOW);
 	}
 	
 	private Map<Unit, Double> radiusRemaining = new HashMap<>();
 	private Map<Tile, Path> paths;
 	
+	private FancyCamera zeroCam = new FancyCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	
+	private float winWidth, winHeight;
+	
 	public void update(FancyCamera cam, float delta)
 	{
+		if(winWidth == 0 || winHeight == 0)
+		{
+			winWidth = Gdx.graphics.getWidth();
+			winHeight = Gdx.graphics.getHeight();
+		}
+		
+		if(winWidth != Gdx.graphics.getWidth() || winHeight != Gdx.graphics.getHeight())
+		{
+			winWidth = Gdx.graphics.getWidth();
+			winHeight = Gdx.graphics.getHeight();
+			
+			holder.setTransform(new Transform(-winWidth / 2, -winHeight / 2, winWidth, 100));
+			
+			for(GUIElement e : holder.getElements())
+			{
+				e.setTransform(e.getTransform().getX(), e.getTransform().getY(), winWidth, e.getTransform().getHeight());
+			}
+			
+			gui.onResize(winWidth, winHeight);
+			
+			zeroCam.setViewport(winWidth, winHeight);
+		}
+		
+		gui.update(delta, zeroCam);
+		
 		if(startPosition != null)
 		{
 			Tile tile = tiles[startPosition.y][startPosition.x];
@@ -104,8 +191,6 @@ public class GameMap
 									paths.get(hoveredTile).getTravelTime());
 							
 							selectedTile.setUnit(null);
-							
-							System.out.println(radiusRemaining.get(hoveredTile.getUnit()) + " vs " + hoveredTile.getUnit().getTravelRadius());
 						}
 						
 						clearSelectedTiles();
@@ -328,34 +413,38 @@ public class GameMap
 	
 	public void drawShapes(Vector2i[] drawBounds, ShapeRenderer batch)
 	{
-		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
-			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
-				if(tiles[y][x] != null)
-					tiles[y][x].drawShapes(batch);
+		if(renderPhase == RenderQue.LOW)
+			for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+				for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
+					if(tiles[y][x] != null)
+						tiles[y][x].drawShapes(batch);
 	}
 
 	public void drawLines(Vector2i[] drawBounds, ShapeRenderer batch)
 	{
-		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
-			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
-				if(tiles[y][x] != null)
-					tiles[y][x].drawLines(batch);
+		if(renderPhase == RenderQue.LOW)
+			for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+				for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
+					if(tiles[y][x] != null)
+						tiles[y][x].drawLines(batch);
 	}
 
 	public void drawPolygons(Vector2i[] drawBounds, PolygonSpriteBatch batch)
 	{
-		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
-			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
-				if(tiles[y][x] != null)
-					tiles[y][x].drawPolygons(batch);
+		if(renderPhase == RenderQue.LOW)
+			for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+				for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
+					if(tiles[y][x] != null)
+						tiles[y][x].drawPolygons(batch);
 	}
 	
 	public void drawSprites(Vector2i[] drawBounds, SpriteBatch batch)
 	{
-		for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
-			for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
-				if(tiles[y][x] != null)
-					tiles[y][x].drawSprites(batch);
+		if(renderPhase == RenderQue.LOW)
+			for(int y = drawBounds[0].y; y < drawBounds[1].y && y < HEIGHT; y++)
+				for(int x = drawBounds[0].x; x < drawBounds[1].x && x < WIDTH; x++)
+					if(tiles[y][x] != null)
+						tiles[y][x].drawSprites(batch);
 	}
 	
 	public Vector2i[] getDrawBounds(FancyCamera cam)
@@ -376,20 +465,32 @@ public class GameMap
 	{
 		Vector2i[] drawBounds = getDrawBounds(cam);
 		
-		batch.getPolyBatch().begin();
-		drawPolygons(drawBounds, batch.getPolyBatch());
-		batch.getPolyBatch().end();
-		
-		batch.getSpriteBatch().begin();
-		drawSprites(drawBounds, batch.getSpriteBatch());
-		batch.getSpriteBatch().end();
-		
-		batch.getShapeBatch().begin(ShapeType.Filled);
-		drawShapes(drawBounds, batch.getShapeBatch());
-		batch.getShapeBatch().end();
-		
-		batch.getShapeBatch().begin(ShapeType.Line);
-		drawLines(drawBounds, batch.getShapeBatch());
-		batch.getShapeBatch().end();
+		for(int i = 0; i <= RenderQue.HIGHEST.getLevel(); i++)
+		{
+			this.renderPhase = RenderQue.fromInt(i);
+			
+			if(renderPhase == RenderQue.MEDIUM)
+			{
+				batch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).combined);
+				gui.draw(batch);
+				batch.setProjectionMatrix(cam.getCombined());
+			}
+			
+			batch.getPolyBatch().begin();
+			drawPolygons(drawBounds, batch.getPolyBatch());
+			batch.getPolyBatch().end();
+			
+			batch.getSpriteBatch().begin();
+			drawSprites(drawBounds, batch.getSpriteBatch());
+			batch.getSpriteBatch().end();
+			
+			batch.getShapeBatch().begin(ShapeType.Filled);
+			drawShapes(drawBounds, batch.getShapeBatch());
+			batch.getShapeBatch().end();
+			
+			batch.getShapeBatch().begin(ShapeType.Line);
+			drawLines(drawBounds, batch.getShapeBatch());
+			batch.getShapeBatch().end();
+		}
 	}
 }

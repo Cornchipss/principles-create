@@ -1,5 +1,7 @@
 package com.superempires.game.render;
 
+import java.util.List;
+
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -19,26 +21,26 @@ public class MasterBatch
 		this.polyBatch = new PolygonSpriteBatch();
 	}
 	
-	/**
-	 * Quick method of drawing a drawable object
-	 * @param drawable The thing that's drawable
-	 */
-	public void draw(IDrawable drawable)
+	public void drawAll(List<? extends IDrawable> elems)
 	{
 		getPolyBatch().begin();
-		drawable.drawPolygons(getPolyBatch());
+		for(IDrawable drawable : elems)
+			drawable.drawPolygons(getPolyBatch());
 		getPolyBatch().end();
 		
 		getShapeBatch().begin(ShapeType.Filled);
-		drawable.drawShapes(getShapeBatch());
+		for(IDrawable drawable : elems)
+			drawable.drawShapes(getShapeBatch());
 		getShapeBatch().end();
 		
 		getSpriteBatch().begin();
-		drawable.drawSprites(getSpriteBatch());
+		for(IDrawable drawable : elems)
+			drawable.drawSprites(getSpriteBatch());
 		getSpriteBatch().end();
 		
 		getShapeBatch().begin(ShapeType.Line);
-		drawable.drawLines(getShapeBatch());
+		for(IDrawable drawable : elems)
+			drawable.drawLines(getShapeBatch());
 		getShapeBatch().end();
 	}
 	

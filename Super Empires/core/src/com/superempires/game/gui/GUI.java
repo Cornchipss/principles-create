@@ -1,16 +1,18 @@
 package com.superempires.game.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.superempires.game.render.FancyCamera;
-import com.superempires.game.render.IDrawable;
+import com.superempires.game.render.MasterBatch;
+import com.superempires.game.render.RenderQue;
 
-public class GUI implements IDrawable
+public class GUI
 {
+	private Map<RenderQue, List<GUIElement>> elementsPerPhase = new HashMap<>();
 	private List<GUIElement> elements = new ArrayList<>();
 	private List<IInteractable> interactables = new ArrayList<>();
 	
@@ -20,38 +22,36 @@ public class GUI implements IDrawable
 			i.tick(delta, cam);
 	}
 	
-	@Override
-	public void drawShapes(ShapeRenderer batch)
+	public void onResize(float w, float h)
 	{
 		for(GUIElement elem : elements)
-			elem.drawShapes(batch);
-	}
-
-	@Override
-	public void drawLines(ShapeRenderer batch)
-	{
-		for(GUIElement elem : elements)
-			elem.drawLines(batch);
-	}
-
-	@Override
-	public void drawPolygons(PolygonSpriteBatch batch)
-	{
-		for(GUIElement elem : elements)
-			elem.drawPolygons(batch);
-	}
-
-	@Override
-	public void drawSprites(SpriteBatch batch)
-	{
-		for(GUIElement elem : elements)
-			elem.drawSprites(batch);
+			elem.onResize(w, h);
 	}
 	
-	public void addElement(GUIElement e)
+	public void draw(MasterBatch batch)
+	{
+		for(int i = 0; i < RenderQue.MAX_RENDER.getLevel(); i++)
+		{			
+			List<GUIElement> elems = elementsPerPhase.get(RenderQue.fromInt(i));
+			
+			if(elems != null)
+			{
+				for(GUIElement e : elems)
+					e.update();
+				
+				batch.drawAll(elems);
+			}
+		}
+	}
+		
+	public void addElement(GUIElement e, RenderQue queSpot)
 	{
 		e.setGUI(this);
 		elements.add(e);
+		
+		List<GUIElement> elems = elementsPerPhase.getOrDefault(queSpot, new LinkedList<GUIElement>());
+		elems.add(e);
+		elementsPerPhase.put(queSpot, elems);
 		
 		if(e instanceof IInteractable)
 			interactables.add((IInteractable)e);
@@ -63,6 +63,13 @@ public class GUI implements IDrawable
 			e.setGUI(null);
 		
 		elements.remove(e);
+		
+		for(RenderQue que : elementsPerPhase.keySet())
+		{
+			if(elementsPerPhase.get(que) != null)
+				if(elementsPerPhase.get(que).remove(e))
+					break;
+		}
 		
 		if(e instanceof IInteractable)
 			interactables.remove((IInteractable)e);
