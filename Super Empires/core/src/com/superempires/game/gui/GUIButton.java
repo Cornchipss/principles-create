@@ -63,13 +63,9 @@ public class GUIButton extends GUITextElement implements IInteractable
 		if(!hoveredFont.equals(unhoveredFont))
 		{
 			if(hovered && getFont().equals(unhoveredFont))
-			{
 				setFont(hoveredFont);
-			}
 			else if(!hovered && getFont().equals(hoveredFont))
-			{
 				setFont(unhoveredFont);
-			}
 		}
 		
 		getFont().draw(batch, getLayout(), getTransform().getX(), getTransform().getY() + getTransform().getHeight() / 2 + getLayout().height / 2);
@@ -86,6 +82,8 @@ public class GUIButton extends GUITextElement implements IInteractable
 		if(hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 			onClick.run(this);
 	}
+	
+	public boolean isHovered() { return hovered; }
 	
 	public GUIButton setHoveredColor(Color c) { this.hoveredColor = c; return this; }
 	public GUIButton setUnhoveredColor(Color c) { this.unhoveredColor = c; return this; }

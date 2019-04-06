@@ -1,5 +1,8 @@
 package com.superempires.game.map.tiling;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonSprite;
@@ -9,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.Building;
+import com.superempires.game.map.tiling.actions.TileAction;
 import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.PhysicalObject;
 import com.superempires.game.render.IDrawable;
@@ -90,18 +94,6 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	@Override
 	public void drawLines(ShapeRenderer batch)
 	{
-//		Gdx.gl.glLineWidth(2);
-//		
-//		for(int i = 0; i + 2 < vertices.length; i += 2)
-//		{
-//			batch.line(
-//					vertices[i] + getTransform().getX(), 
-//					vertices[i + 1] + getTransform().getY(), 
-//					vertices[i + 2] + getTransform().getX(), 
-//					vertices[i + 3] + getTransform().getY(), 
-//					Color.BLACK, Color.BLACK);
-//		}
-		
 		if(building != null)
 			building.drawLines(batch);
 		if(unit != null)
@@ -133,7 +125,7 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		selected = s;
 		
 		if(s)
-			polygonSprite.setColor(Colors.mixShading(biome.getShadingColor(), Colors.CLEAR_SHADING));
+			polygonSprite.setColor(Colors.CLEAR_SHADING);
 		else
 			setHighlighted(highlighted);
 	}
@@ -145,9 +137,9 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 		if(!selected) // Selected takes prescidence over highlighting
 		{
 			if(h)
-				polygonSprite.setColor(Colors.mixShading(biome.getShadingColor(), Colors.SEMI_GREY_SHADING));
+				polygonSprite.setColor(Colors.LIGHT_GREY_SHADING);
 			else
-				polygonSprite.setColor(Colors.mixShading(biome.getShadingColor(), Colors.GREY_SHADING));
+				polygonSprite.setColor(Colors.GREY_SHADING);
 		}
 	}
 
@@ -223,4 +215,11 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	}
 	
 	public int getId() { return id; }
+
+	public List<TileAction> getActions()
+	{
+		return new ArrayList<>();
+	}
+
+	public String getName() { return "Generic Tile"; }
 }

@@ -14,6 +14,9 @@ public class Registerer
 		// TEXTURES
 		///
 		
+		// GUI
+		GameRegistry.registerTexture("button-plant", "gui/buttons/button-plant.png");
+		
 		// Tiles
 		GameRegistry.registerTexture("tile-crag", "tiles/tile-crag.png");
 		GameRegistry.registerTexture("tile-snow", "tiles/tile-snow.png");

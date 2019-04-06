@@ -20,7 +20,7 @@ public class CragBiome extends Biome
 	@Override
 	public Color getShadingColor()
 	{
-		return Color.WHITE;
+		return Color.ORANGE;
 	}
 
 	@Override

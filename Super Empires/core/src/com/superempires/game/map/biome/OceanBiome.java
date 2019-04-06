@@ -22,7 +22,7 @@ public class OceanBiome extends Biome
 	@Override
 	public Color getShadingColor()
 	{
-		return Color.WHITE;
+		return Color.GREEN;
 	}
 
 	@Override

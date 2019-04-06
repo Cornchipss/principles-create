@@ -1,5 +1,6 @@
 package com.superempires.game.map.biome;
 
+import com.badlogic.gdx.graphics.Color;
 import com.superempires.game.map.tiling.DesertTile;
 import com.superempires.game.map.tiling.SnowTile;
 import com.superempires.game.map.tiling.Tile;
@@ -16,6 +17,12 @@ public class BeachBiome extends Biome
 			tiles[y][x] = new DesertTile(x, y, temperature, this);
 	}
 
+	@Override
+	public Color getShadingColor()
+	{
+		return Color.GREEN;
+	}
+	
 	@Override
 	public boolean isAcceptableTemperature(double temperature)
 	{

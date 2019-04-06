@@ -73,6 +73,15 @@ public class GUIElementHolder extends GUIElement
 	}
 	
 	@Override
+	public void setHidden(boolean b)
+	{
+		super.setHidden(b);
+		
+		for(GUIElement elem : elems)
+			elem.setHidden(b);
+	}
+	
+	@Override
 	public void drawShapes(ShapeRenderer batch)
 	{		
 		if(background.a != 0)
@@ -108,5 +117,13 @@ public class GUIElementHolder extends GUIElement
 	public List<GUIElement> getElements()
 	{
 		return elems;
+	}
+
+	public void removeAllElements()
+	{
+		while(elems.size() > 0)
+		{
+			removeElement(elems.get(elems.size() - 1));
+		}
 	}
 }

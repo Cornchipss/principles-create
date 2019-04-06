@@ -20,7 +20,7 @@ public class DesertBiome extends Biome
 	@Override
 	public Color getShadingColor()
 	{
-		return Color.WHITE;
+		return Color.BROWN;
 	}
 
 	@Override

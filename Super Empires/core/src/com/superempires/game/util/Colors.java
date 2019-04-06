@@ -4,8 +4,9 @@ import com.badlogic.gdx.graphics.Color;
 
 public class Colors
 {
-	public static final Color SEMI_GREY_SHADING = new Color(220 / 255f, 220 / 255f, 220 / 255f, 1);
-	public static final Color GREY_SHADING = new Color(140 / 255f, 140 / 255f, 140 / 255f, 1);
+	public static final Color LIGHT_GREY_SHADING = new Color(230 / 255f, 230 / 255f, 230 / 255f, 1);
+	public static final Color GREY_SHADING = new Color(210 / 255f, 210 / 255f, 210 / 255f, 1);
+	public static final Color DARK_GREY_SHADING = new Color(140 / 255f, 140 / 255f, 140 / 255f, 1);
 	public static final Color CLEAR_SHADING = Color.WHITE;
 	
 	public static Color mixShading(Color a, Color b)

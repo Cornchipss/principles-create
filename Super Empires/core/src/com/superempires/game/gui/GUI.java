@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector2;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.render.MasterBatch;
 import com.superempires.game.render.RenderQue;
@@ -16,10 +18,18 @@ public class GUI
 	private List<GUIElement> elements = new ArrayList<>();
 	private List<IInteractable> interactables = new ArrayList<>();
 	
+	private List<GUIElement> removes = new ArrayList<>();
+	
+	private boolean locked = false;
+	
 	public void update(float delta, FancyCamera cam)
 	{
+		locked = true;
 		for(IInteractable i : interactables)
 			i.tick(delta, cam);
+		locked = false;
+		
+		clearGarbage();
 	}
 	
 	public void onResize(float w, float h)
@@ -30,6 +40,7 @@ public class GUI
 	
 	public void draw(MasterBatch batch)
 	{
+		locked = true;
 		for(int i = 0; i < RenderQue.MAX_RENDER.getLevel(); i++)
 		{			
 			List<GUIElement> elems = elementsPerPhase.get(RenderQue.fromInt(i));
@@ -39,9 +50,35 @@ public class GUI
 				for(GUIElement e : elems)
 					e.update();
 				
-				batch.drawAll(elems);
+				batch.begin(batch.getPolyBatch());
+				for(GUIElement drawable : elems)
+					if(!drawable.isHidden())
+						drawable.drawPolygons(batch.getPolyBatch());
+				batch.end(batch.getPolyBatch());
+				
+				batch.begin(batch.getShapeBatch(), ShapeType.Filled);
+				for(GUIElement drawable : elems)
+					if(!drawable.isHidden())
+						drawable.drawShapes(batch.getShapeBatch());
+				batch.end(batch.getShapeBatch());
+				
+				batch.begin(batch.getSpriteBatch());
+				for(GUIElement drawable : elems)
+					if(!drawable.isHidden())
+						drawable.drawSprites(batch.getSpriteBatch());
+				batch.end(batch.getSpriteBatch());
+				
+				batch.begin(batch.getShapeBatch(), ShapeType.Line);
+				for(GUIElement drawable : elems)
+					if(!drawable.isHidden())
+						drawable.drawLines(batch.getShapeBatch());
+				batch.end(batch.getShapeBatch());
 			}
 		}
+		
+		locked = false;
+		
+		clearGarbage();
 	}
 		
 	public void addElement(GUIElement e, RenderQue queSpot)
@@ -59,25 +96,44 @@ public class GUI
 	
 	public void removeElement(GUIElement e)
 	{
-		if(e.getGUI().equals(this))
-			e.setGUI(null);
-		
-		elements.remove(e);
-		
-		for(RenderQue que : elementsPerPhase.keySet())
+		if(!locked)
 		{
-			if(elementsPerPhase.get(que) != null)
-				if(elementsPerPhase.get(que).remove(e))
-					break;
+			if(e.getGUI().equals(this))
+				e.setGUI(null);
+			
+			elements.remove(e);
+			
+			for(RenderQue que : elementsPerPhase.keySet())
+			{
+				if(elementsPerPhase.get(que) != null)
+					if(elementsPerPhase.get(que).remove(e))
+						break;
+			}
+			
+			if(e instanceof IInteractable)
+				interactables.remove((IInteractable)e);
 		}
-		
-		if(e instanceof IInteractable)
-			interactables.remove((IInteractable)e);
+		else
+			removes.add(e);
 	}
 
 	public void dispose()
 	{
 		for(GUIElement elem : elements)
 			elem.dispose();
+	}
+
+	public boolean isWithin(Vector2 coords)
+	{
+		for(GUIElement elem : elements)
+			if(!elem.isHidden() && elem.getTransform().isWithin(coords))
+				return true;
+		return false;
+	}
+	
+	private void clearGarbage()
+	{
+		while(removes.size() > 0)
+			removeElement(removes.remove(removes.size() - 1));
 	}
 }

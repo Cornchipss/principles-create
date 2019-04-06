@@ -17,12 +17,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import com.superempires.game.gui.GUI;
-import com.superempires.game.gui.GUIButton;
+import com.superempires.game.gui.GUIButtonTextured;
 import com.superempires.game.gui.GUIElementHolder;
 import com.superempires.game.gui.GUIText;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.map.pathing.Path;
 import com.superempires.game.map.tiling.Tile;
+import com.superempires.game.map.tiling.actions.TileAction;
 import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.registry.GameRegistry;
@@ -64,43 +65,11 @@ public class GameMap
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		
-		FreeTypeFontParameter param = new FreeTypeFontParameter();
-		param.color = Color.WHITE;
-		
-		FreeTypeFontParameter param2 = new FreeTypeFontParameter();
-		param2.color = Color.WHITE;
-		
 		holder = new GUIElementHolder(new Transform(-w / 2, -h / 2, w, 100), gui);
 		
-		holder.addElement
-		(
-			new GUIText
-			(
-				0, 80, w, 0, gui, 
-				GameRegistry.getFont("font-default", param), 
-				"Hello World!", 
-				Align.center
-			),
-			Align.bottomRight,
-			RenderQue.MEDIUM
-		).addElement
-		(
-			new GUIButton
-			(
-				new Transform(w / 2 - 100 / 2, 10, 100, 60), gui,
-				GameRegistry.getFont("font-default", param2), 
-				new Callback()
-				{
-					@Override
-					public void run(Object... args)
-					{
-						System.out.println("123, Do Re Me, Baby You & Me!");
-					}
-				}, "Do Stuff"
-			).setUnhoveredColor(new Color(0, 0, 0, 0.1f)).setHoveredColor(new Color(0, 0, 0, 0.3f)),
-			Align.bottomRight,
-			RenderQue.MEDIUM
-		).setBackground(new Color(0, 0, 0, 0.2f));
+		holder.setBackground(new Color(0, 0, 0, 0.2f));
+		
+		holder.setHidden(true);
 		
 		gui.addElement(holder, RenderQue.LOW);
 	}
@@ -113,7 +82,7 @@ public class GameMap
 	private float winWidth, winHeight;
 	
 	public void update(FancyCamera cam, float delta)
-	{
+	{		
 		if(winWidth == 0 || winHeight == 0)
 		{
 			winWidth = Gdx.graphics.getWidth();
@@ -145,12 +114,14 @@ public class GameMap
 		
 	    Transform bounds = getBounds();
 	    
-	    cam.position.set(
+	    cam.position.set
+	    (
     		Helper.clamp(cam.position.x, Gdx.graphics.getWidth() / 2 + bounds.getX() * Tile.DIMENSIONS, 
     				bounds.getWidth() * Tile.DIMENSIONS - Gdx.graphics.getWidth() / 2), 
     		Helper.clamp(cam.position.y, Gdx.graphics.getHeight() / 2 + bounds.getY() * 2 * Tile.DIMENSIONS, 
     				bounds.getHeight() * Tile.DIMENSIONS - Gdx.graphics.getHeight() / 2), 
-    		cam.position.z);
+    		cam.position.z
+    	);
 	    
 		cam.update();
 		
@@ -166,7 +137,7 @@ public class GameMap
 			
 			boolean isInSelectedRange = isInSelectedRange(hoveredTile);
 			
-			if(within(index.x, index.y))
+			if(!gui.isWithin(zeroCam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY())) && within(index.x, index.y))
 			{
 				// Handles the old highlighted tile
 				if(hoveredTile != null && !isInSelectedRange)
@@ -176,8 +147,7 @@ public class GameMap
 				hoveredTile = getTile(index.x, index.y);
 				
 				
-				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) 
-						|| Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 				{
 					if(selectedTile != null)
 					{
@@ -195,39 +165,106 @@ public class GameMap
 						clearSelectedTiles();
 					}
 					
-					if(!Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
-					{
-						hoveredTile.setSelected(true);
-						selectedTile = hoveredTile; // They are selecting the one they're hovering
-						
-						// Show radius if it has a unit
-						if(selectedTile.getUnit() != null)
-						{
-							paths = pathfindTiles(
-									index.x, 
-									index.y, 
-									selectedTile.getUnit().getTravelRadius() - 
-									radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0));
-							
-							selectedTiles = new Tile[paths.size()];
-							
-							int i = 0;
-							for(Tile t : paths.keySet())
-							{
-								t.setHighlighted(true);
-								
-								selectedTiles[i] = t;
-								i++;
-							}
-						}
-					}
+					hoveredTile.setSelected(true);
+					selectedTile = hoveredTile; // They are selecting the one they're hovering
+					
+					createTileGUI(selectedTile);
+					
+					// Show radius if it has a unit
+					showTileRadius(index);
 				}
 				else
-					hoveredTile.setHighlighted(true);
+				{
+					if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+						holder.setHidden(true);
+					else
+						hoveredTile.setHighlighted(true);
+				}
 			}
 		}
 	}
 	
+	private void showTileRadius(Vector2i index)
+	{
+		if(selectedTile.getUnit() != null)
+		{
+			paths = pathfindTiles(
+					index.x, 
+					index.y, 
+					selectedTile.getUnit().getTravelRadius() - 
+					radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0));
+			
+			selectedTiles = new Tile[paths.size()];
+			
+			int i = 0;
+			for(Tile t : paths.keySet())
+			{
+				t.setHighlighted(true);
+				
+				selectedTiles[i] = t;
+				i++;
+			}
+		}
+	}
+	
+	private void createTileGUI(final Tile t)
+	{
+		List<TileAction> actions = t.getActions();
+		holder.setHidden(false);
+		
+		holder.removeAllElements();
+		
+		float w = Gdx.graphics.getWidth();
+		
+		FreeTypeFontParameter param = new FreeTypeFontParameter();
+		param.color = Color.WHITE;
+		
+		FreeTypeFontParameter param2 = new FreeTypeFontParameter();
+		param2.color = Color.WHITE;
+		
+		holder.addElement
+		(
+			new GUIText
+			(
+				0, 80, w, 0, gui, 
+				GameRegistry.getFont("font-default", param), 
+				t.getName(), 
+				Align.center
+			),
+			Align.bottomRight,
+			RenderQue.MEDIUM
+		);
+		
+		final int BTN_W = 160;
+		
+		final GameMap instance = this;
+		
+		for(final TileAction a : actions)
+		{
+			holder.addElement
+			(
+				new GUIButtonTextured
+				(
+					new Transform(w / 2 - BTN_W / 2, 10, BTN_W, 60), gui,
+					GameRegistry.getFont("font-default", param2), 
+					new Callback()
+					{
+						@Override
+						public void run(Object... args)
+						{	
+							a.getAction().run(args);
+							
+							instance.createTileGUI(t);
+						}
+					}, a.getName(),
+					a.getButtonTexture()
+				).setUnhoveredColor(new Color(1, 1, 1, 0.9f)).setHoveredColor(Color.WHITE),
+				Align.bottomRight,
+				RenderQue.MEDIUM
+			);
+		}
+	}
+
 	public boolean isInSelectedRange(Tile t)
 	{
 		if(selectedTiles != null && t != null)
@@ -315,10 +352,8 @@ public class GameMap
 	
 	/**
 	 * Gets adjacent tiles in a semi-quick manner
-	 * This only works if the radius is 3 or below.
 	 * @param indexX The index x to check around
 	 * @param indexY The index y to check around
-	 * @param radius The radius of the search (best if 3 or below)
 	 * @return The tiles in an array that are surrounding said index.
 	 */
 	public Tile[] getAdjacentTiles(int indexX, int indexY)

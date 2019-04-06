@@ -43,6 +43,12 @@ public class ForestBiome extends Biome
 	}
 	
 	@Override
+	public Color getShadingColor()
+	{
+		return Color.GREEN;
+	}
+	
+	@Override
 	public BiomeType getType()
 	{
 		return BiomeType.LAND;

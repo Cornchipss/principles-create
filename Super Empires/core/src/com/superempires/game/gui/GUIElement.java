@@ -9,11 +9,14 @@ public abstract class GUIElement implements IDrawable
 {
 	private GUI gui;
 	private Transform transform;
+	private boolean hidden;
 	
 	public GUIElement(Transform transform, GUI gui)
 	{
 		this.transform = transform;
 		this.gui = gui;
+		
+		this.hidden = false;
 	}
 	
 	public abstract void fontChangedEvent(BitmapFont f);
@@ -45,4 +48,7 @@ public abstract class GUIElement implements IDrawable
 	{
 		
 	}
+	
+	public void setHidden(boolean h) { this.hidden = h; }
+	public boolean isHidden() { return hidden; }
 }
