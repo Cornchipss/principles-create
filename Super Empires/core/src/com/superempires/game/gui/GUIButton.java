@@ -17,17 +17,29 @@ public class GUIButton extends GUITextElement implements IInteractable
 	private boolean hovered = false;
 	private Callback onClick;
 	
+	private Color unhoveredColor = Color.GRAY;
+	private Color hoveredColor = Color.WHITE;
+	
+	private BitmapFont unhoveredFont, hoveredFont;
+	
 	public GUIButton(Transform transform, GUI gui, BitmapFont font, Callback onClick, String text)
 	{
-		super(transform, text, gui, font);
+		this(transform, gui, font, font, onClick, text);
+	}
+	
+	public GUIButton(Transform transform, GUI gui, BitmapFont unhovered, BitmapFont hovered, Callback onClick, String text)
+	{
+		super(transform, text, gui, unhovered);
 		
+		this.unhoveredFont = unhovered;
+		this.hoveredFont = hovered;
 		this.onClick = onClick;
 	}
 
 	@Override
 	public void drawShapes(ShapeRenderer batch)
 	{
-		Color c = hovered ? Color.WHITE : Color.GRAY;
+		Color c = hovered ? hoveredColor : unhoveredColor;
 		
 		batch.rect(getTransform().getX(), getTransform().getY(), getTransform().getWidth(), getTransform().getHeight(), 
 				c, c, c, c);
@@ -48,6 +60,18 @@ public class GUIButton extends GUITextElement implements IInteractable
 	@Override
 	public void drawSprites(SpriteBatch batch)
 	{
+		if(!hoveredFont.equals(unhoveredFont))
+		{
+			if(hovered && getFont().equals(unhoveredFont))
+			{
+				setFont(hoveredFont);
+			}
+			else if(!hovered && getFont().equals(hoveredFont))
+			{
+				setFont(unhoveredFont);
+			}
+		}
+		
 		getFont().draw(batch, getLayout(), getTransform().getX(), getTransform().getY() + getTransform().getHeight() / 2 + getLayout().height / 2);
 	}
 	
@@ -58,8 +82,14 @@ public class GUIButton extends GUITextElement implements IInteractable
 		
 		hovered = coords.x > getTransform().getX() && coords.x < getTransform().getX() + getTransform().getWidth() &&
 				coords.y > getTransform().getY() && coords.y < getTransform().getY() + getTransform().getHeight();
-				
+		
 		if(hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 			onClick.run(this);
 	}
+	
+	public GUIButton setHoveredColor(Color c) { this.hoveredColor = c; return this; }
+	public GUIButton setUnhoveredColor(Color c) { this.unhoveredColor = c; return this; }
+	
+	public Color getHoveredColor() { return hoveredColor; }
+	public Color getUnhoveredColor() { return unhoveredColor; }
 }

@@ -2,11 +2,13 @@ package com.superempires.game.render;
 
 import java.util.List;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
+import com.superempires.game.util.GLHelper;
 
 public class MasterBatch
 {
@@ -23,25 +25,25 @@ public class MasterBatch
 	
 	public void drawAll(List<? extends IDrawable> elems)
 	{
-		getPolyBatch().begin();
+		begin(getPolyBatch());
 		for(IDrawable drawable : elems)
 			drawable.drawPolygons(getPolyBatch());
-		getPolyBatch().end();
+		end(getPolyBatch());
 		
-		getShapeBatch().begin(ShapeType.Filled);
+		begin(getShapeBatch(), ShapeType.Filled);
 		for(IDrawable drawable : elems)
 			drawable.drawShapes(getShapeBatch());
-		getShapeBatch().end();
+		end(getShapeBatch());
 		
-		getSpriteBatch().begin();
+		begin(getSpriteBatch());
 		for(IDrawable drawable : elems)
 			drawable.drawSprites(getSpriteBatch());
-		getSpriteBatch().end();
+		end(getSpriteBatch());
 		
-		getShapeBatch().begin(ShapeType.Line);
+		begin(getShapeBatch(), ShapeType.Line);
 		for(IDrawable drawable : elems)
 			drawable.drawLines(getShapeBatch());
-		getShapeBatch().end();
+		end(getShapeBatch());
 	}
 	
 	public SpriteBatch getSpriteBatch() { return spriteBatch; }
@@ -50,17 +52,45 @@ public class MasterBatch
 	
 	public PolygonSpriteBatch getPolyBatch() { return polyBatch; }
 	
+	public void begin(Object batch, ShapeType... type)
+	{
+		if(type.length > 0 && type[0] != null && batch instanceof ShapeRenderer)
+			((ShapeRenderer)batch).begin(type[0]);
+		else
+		{
+			if(batch instanceof Batch)
+				((Batch)batch).begin();
+			else
+				throw new IllegalArgumentException("First argument must be of type Batch or ShapeRenderer");
+		}
+		GLHelper.enableTransparency();
+	}
+	
+	public void end(Object batch)
+	{
+		if(batch instanceof Batch)
+			((Batch)batch).end();
+		else if(batch instanceof ShapeRenderer)
+			((ShapeRenderer) batch).end();
+		else
+			throw new IllegalArgumentException("First argument must be of type Batch or ShapeRenderer");
+	}
+	
 	public void setProjectionMatrix(Matrix4 combined)
 	{
-		shapeBatch.setProjectionMatrix(combined);
-		spriteBatch.setProjectionMatrix(combined);
-		polyBatch.setProjectionMatrix(combined);
+		getShapeBatch().setProjectionMatrix(combined);
+		getSpriteBatch().setProjectionMatrix(combined);
+		getPolyBatch().setProjectionMatrix(combined);
 	}
 	
 	public void dispose()
 	{
-		spriteBatch.dispose();
-		shapeBatch.dispose();
-		polyBatch.dispose();
+		getSpriteBatch().dispose();
+		getShapeBatch().dispose();
+		getPolyBatch().dispose();
+		
+		spriteBatch = null;
+		shapeBatch = null;
+		polyBatch = null;
 	}
 }

@@ -8,7 +8,7 @@ public class LoadingScreen implements Screen
 {
 	@Override
 	public void show()
-	{
+	{		
 		Registerer.registerAll();
 		
 		SuperEmpires.swapScreen(new MainMenuScreen());

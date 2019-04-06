@@ -50,7 +50,7 @@ public class GameScreen implements Screen
 	@Override
 	public void resize(int width, int height)
 	{
-		cam.setViewport(width, height); // TODO
+		cam.setViewport(width, height);
 	}
 
 	@Override

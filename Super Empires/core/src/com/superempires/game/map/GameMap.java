@@ -18,7 +18,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import com.superempires.game.gui.GUI;
 import com.superempires.game.gui.GUIButton;
-import com.superempires.game.gui.GUIElement;
 import com.superempires.game.gui.GUIElementHolder;
 import com.superempires.game.gui.GUIText;
 import com.superempires.game.map.buildings.Building;
@@ -57,7 +56,7 @@ public class GameMap
 		WIDTH = tiles[0].length;
 		HEIGHT = tiles.length;
 		
-		this.startPosition = startPosition = new Vector2i(0, 0);
+		this.startPosition = startPosition;
 		this.tiles = tiles;
 		
 		gui = new GUI();
@@ -67,6 +66,9 @@ public class GameMap
 		
 		FreeTypeFontParameter param = new FreeTypeFontParameter();
 		param.color = Color.WHITE;
+		
+		FreeTypeFontParameter param2 = new FreeTypeFontParameter();
+		param2.color = Color.WHITE;
 		
 		holder = new GUIElementHolder(new Transform(-w / 2, -h / 2, w, 100), gui);
 		
@@ -79,13 +81,14 @@ public class GameMap
 				"Hello World!", 
 				Align.center
 			),
+			Align.bottomRight,
 			RenderQue.MEDIUM
 		).addElement
 		(
 			new GUIButton
 			(
 				new Transform(w / 2 - 100 / 2, 10, 100, 60), gui,
-				GameRegistry.getFont("font-default", param), 
+				GameRegistry.getFont("font-default", param2), 
 				new Callback()
 				{
 					@Override
@@ -93,8 +96,9 @@ public class GameMap
 					{
 						System.out.println("123, Do Re Me, Baby You & Me!");
 					}
-				}, "ABC!"
-			),
+				}, "Do Stuff"
+			).setUnhoveredColor(new Color(0, 0, 0, 0.1f)).setHoveredColor(new Color(0, 0, 0, 0.3f)),
+			Align.bottomRight,
 			RenderQue.MEDIUM
 		).setBackground(new Color(0, 0, 0, 0.2f));
 		
@@ -123,14 +127,9 @@ public class GameMap
 			
 			holder.setTransform(new Transform(-winWidth / 2, -winHeight / 2, winWidth, 100));
 			
-			for(GUIElement e : holder.getElements())
-			{
-				e.setTransform(e.getTransform().getX(), e.getTransform().getY(), winWidth, e.getTransform().getHeight());
-			}
-			
 			gui.onResize(winWidth, winHeight);
 			
-			zeroCam.setViewport(winWidth, winHeight);
+			zeroCam = new FancyCamera(winWidth, winHeight);
 		}
 		
 		gui.update(delta, zeroCam);
@@ -476,21 +475,21 @@ public class GameMap
 				batch.setProjectionMatrix(cam.getCombined());
 			}
 			
-			batch.getPolyBatch().begin();
+			batch.begin(batch.getPolyBatch());
 			drawPolygons(drawBounds, batch.getPolyBatch());
-			batch.getPolyBatch().end();
+			batch.end(batch.getPolyBatch());
 			
-			batch.getSpriteBatch().begin();
+			batch.begin(batch.getSpriteBatch());
 			drawSprites(drawBounds, batch.getSpriteBatch());
-			batch.getSpriteBatch().end();
+			batch.end(batch.getSpriteBatch());
 			
-			batch.getShapeBatch().begin(ShapeType.Filled);
+			batch.begin(batch.getShapeBatch(), ShapeType.Filled);
 			drawShapes(drawBounds, batch.getShapeBatch());
-			batch.getShapeBatch().end();
+			batch.end(batch.getShapeBatch());
 			
-			batch.getShapeBatch().begin(ShapeType.Line);
+			batch.begin(batch.getShapeBatch(), ShapeType.Line);
 			drawLines(drawBounds, batch.getShapeBatch());
-			batch.getShapeBatch().end();
+			batch.end(batch.getShapeBatch());
 		}
 	}
 }

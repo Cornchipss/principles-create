@@ -1,19 +1,23 @@
 package com.superempires.game.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.RenderQue;
 
 public class GUIElementHolder extends GUIElement
 {
 	private List<GUIElement> elems = new ArrayList<>();
+	private Map<GUIElement, Integer> alignments = new HashMap<>();
 	
 	private Color background = new Color(0, 0, 0, 0);
 	
@@ -30,14 +34,19 @@ public class GUIElementHolder extends GUIElement
 	
 	public GUIElementHolder addElement(GUIElement elem, RenderQue que)
 	{
+		return addElement(elem, Align.left, que);
+	}
+	
+	public GUIElementHolder addElement(GUIElement elem, int align, RenderQue que)
+	{
 		elems.add(elem);
 		
 		elem.getTransform().setX(getTransform().getX() + elem.getTransform().getX());
 		elem.getTransform().setY(getTransform().getY() + elem.getTransform().getY());
 		
-		System.out.println(elem.getTransform());
-		
 		getGUI().addElement(elem, que);
+		
+		alignments.put(elem, align);
 		
 		return this;
 	}
@@ -45,20 +54,19 @@ public class GUIElementHolder extends GUIElement
 	public void removeElement(GUIElement elem)
 	{
 		elems.remove(elem);
+		alignments.remove(elem);
 
 		getGUI().removeElement(elem);
 	}
-
+	
 	@Override
 	public void setTransform(Transform t)
-	{		
+	{
 		for(GUIElement elem : elems)
 		{
-			float difX = t.getX() - getTransform().getX();
-			float difY = t.getY() - getTransform().getY();
+			float difY = getTransform().getY() - t.getY();
 			
-			elem.getTransform().setX(elem.getTransform().getX() + difX);
-			elem.getTransform().setY(elem.getTransform().getY() + difY);
+			elem.getTransform().setY(elem.getTransform().getY() - difY);
 		}
 		
 		super.setTransform(t);
@@ -66,7 +74,7 @@ public class GUIElementHolder extends GUIElement
 	
 	@Override
 	public void drawShapes(ShapeRenderer batch)
-	{
+	{		
 		if(background.a != 0)
 			batch.rect(getTransform().getX(), getTransform().getY(), 
 					getTransform().getWidth(), getTransform().getHeight(), 

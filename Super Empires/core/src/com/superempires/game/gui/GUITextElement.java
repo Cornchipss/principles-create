@@ -53,6 +53,7 @@ public abstract class GUITextElement extends GUIElement
 	}
 	
 	public BitmapFont getFont() { return font; }
+	public void setFont(BitmapFont f) { this.font = f; fontChangedEvent(f); }
 	
 	public Label getTextBox() { return label; }
 	
