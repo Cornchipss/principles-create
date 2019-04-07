@@ -27,4 +27,10 @@ public class DesertTile extends Tile
 	{
 		return false;
 	}
+
+	@Override
+	public String getName()
+	{
+		return "Desert Tile";
+	}
 }

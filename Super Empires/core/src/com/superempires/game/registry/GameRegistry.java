@@ -13,6 +13,7 @@ public class GameRegistry
 {
 	private static Map<String, Texture> textures = new HashMap<>();
 	private static Map<String, FreeTypeFontGenerator> fonts = new HashMap<>();
+	private static Map<String, BitmapFont> builtFonts = new HashMap<>();
 	
 	public static void registerTexture(String name, String filename)
 	{
@@ -29,7 +30,7 @@ public class GameRegistry
 		return fonts.get(name);
 	}
 	
-	public static BitmapFont getFont(String name, FreeTypeFontParameter params)
+	public static BitmapFont buildFont(String name, FreeTypeFontParameter params)
 	{
 		if(params == null)
 			params = new FreeTypeFontParameter();
@@ -45,11 +46,24 @@ public class GameRegistry
 	public static void dispose()
 	{
 		// Fonts
+		for(String s : builtFonts.keySet())
+			builtFonts.get(s).dispose();
+		
 		for(String s : fonts.keySet())
 			fonts.get(s).dispose();
 		
 		// Textures
 		for(String s : textures.keySet())
 			textures.get(s).dispose();
+	}
+
+	public static BitmapFont getFont(String string)
+	{
+		return builtFonts.get(string);
+	}
+
+	public static void registerBitmapFont(String string, BitmapFont buildFont)
+	{
+		builtFonts.put(string, buildFont);
 	}
 }

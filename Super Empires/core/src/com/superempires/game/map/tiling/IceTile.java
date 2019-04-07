@@ -27,4 +27,10 @@ public class IceTile extends Tile
 	{
 		return false;
 	}
+
+	@Override
+	public String getName()
+	{
+		return "Ice Tile";
+	}
 }

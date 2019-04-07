@@ -27,5 +27,10 @@ public class WaterTile extends Tile
 	{
 		return true;
 	}
-	
+
+	@Override
+	public String getName()
+	{
+		return "Water Tile";
+	}
 }

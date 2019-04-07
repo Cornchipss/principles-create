@@ -61,12 +61,6 @@ public class GUIText extends GUITextElement
 		getTextBox().draw(batch, 1);
 	}
 	
-	@Override
-	public void dispose()
-	{
-		getFont().dispose();
-	}
-	
 	public int getAlignment() { return alignment; }
 	public void setAlignment(int alignment)
 	{

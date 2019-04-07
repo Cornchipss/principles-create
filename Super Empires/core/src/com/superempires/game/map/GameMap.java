@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
@@ -20,10 +19,10 @@ import com.superempires.game.gui.GUI;
 import com.superempires.game.gui.GUIButtonTextured;
 import com.superempires.game.gui.GUIElementHolder;
 import com.superempires.game.gui.GUIText;
+import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.map.pathing.Path;
 import com.superempires.game.map.tiling.Tile;
-import com.superempires.game.map.tiling.actions.TileAction;
 import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.registry.GameRegistry;
@@ -149,34 +148,41 @@ public class GameMap
 				
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 				{
-					if(selectedTile != null)
+					if(!hoveredTile.equals(selectedTile))
 					{
-						if(isInSelectedRange && selectedTile.getUnit() != null && hoveredTile.canHoldUnit(selectedTile.getUnit()))
+						if(selectedTile != null)
 						{
-							hoveredTile.setUnit(selectedTile.getUnit());
+							if(isInSelectedRange && selectedTile.getUnit() != null && hoveredTile.canHoldUnit(selectedTile.getUnit()))
+							{
+								hoveredTile.setUnit(selectedTile.getUnit());
+								
+								radiusRemaining.put(selectedTile.getUnit(), 
+										radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0) + 
+										paths.get(hoveredTile).getTravelTime());
+								
+								selectedTile.setUnit(null);
+							}
 							
-							radiusRemaining.put(selectedTile.getUnit(), 
-									radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0) + 
-									paths.get(hoveredTile).getTravelTime());
-							
-							selectedTile.setUnit(null);
+							clearSelectedTiles();
 						}
 						
-						clearSelectedTiles();
+						hoveredTile.setSelected(true);
+						selectedTile = hoveredTile; // They are selecting the one they're hovering
+						
+						createTileGUI(selectedTile);
+						
+						// Show radius if it has a unit
+						showTileRadius(index);
 					}
-					
-					hoveredTile.setSelected(true);
-					selectedTile = hoveredTile; // They are selecting the one they're hovering
-					
-					createTileGUI(selectedTile);
-					
-					// Show radius if it has a unit
-					showTileRadius(index);
 				}
 				else
 				{
 					if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+					{
 						holder.setHidden(true);
+						
+						clearSelectedTiles();
+					}
 					else
 						hoveredTile.setHighlighted(true);
 				}
@@ -209,25 +215,19 @@ public class GameMap
 	
 	private void createTileGUI(final Tile t)
 	{
-		List<TileAction> actions = t.getActions();
+		List<Action> actions = t.getActions();
 		holder.setHidden(false);
 		
 		holder.removeAllElements();
 		
 		float w = Gdx.graphics.getWidth();
 		
-		FreeTypeFontParameter param = new FreeTypeFontParameter();
-		param.color = Color.WHITE;
-		
-		FreeTypeFontParameter param2 = new FreeTypeFontParameter();
-		param2.color = Color.WHITE;
-		
 		holder.addElement
 		(
 			new GUIText
 			(
 				0, 80, w, 0, gui, 
-				GameRegistry.getFont("font-default", param), 
+				GameRegistry.getFont("font-default-white"), 
 				t.getName(), 
 				Align.center
 			),
@@ -235,18 +235,27 @@ public class GameMap
 			RenderQue.MEDIUM
 		);
 		
-		final int BTN_W = 160;
+		final float BTN_W = 160;
+		final float BTN_PADDING = 10;
 		
 		final GameMap instance = this;
 		
-		for(final TileAction a : actions)
+		float centerScreen = w / 2 - BTN_W / 2;
+		
+		final float offsetConst = (actions.size() - 1) / 2f * (BTN_W + BTN_PADDING);
+		
+		for(int i = 0; i < actions.size(); i++)
 		{
+			final Action a = actions.get(i);
+			
+			float offset = i * (BTN_W + BTN_PADDING);
+			
 			holder.addElement
 			(
 				new GUIButtonTextured
 				(
-					new Transform(w / 2 - BTN_W / 2, 10, BTN_W, 60), gui,
-					GameRegistry.getFont("font-default", param2), 
+					new Transform(offset + centerScreen - offsetConst, 10, BTN_W, 60), gui,
+					GameRegistry.getFont("font-default-white"), 
 					new Callback()
 					{
 						@Override
@@ -286,6 +295,8 @@ public class GameMap
 			}
 			
 			selectedTiles = new Tile[0];
+			
+			selectedTile = null;
 		}
 	}
 	

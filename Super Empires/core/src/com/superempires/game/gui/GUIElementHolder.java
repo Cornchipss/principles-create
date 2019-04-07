@@ -46,6 +46,7 @@ public class GUIElementHolder extends GUIElement
 		
 		getGUI().addElement(elem, que);
 		
+		
 		alignments.put(elem, align);
 		
 		return this;

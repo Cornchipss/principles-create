@@ -10,15 +10,17 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.superempires.game.map.actions.Action;
+import com.superempires.game.map.actions.IActionable;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.Building;
-import com.superempires.game.map.tiling.actions.TileAction;
 import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.PhysicalObject;
 import com.superempires.game.render.IDrawable;
 import com.superempires.game.util.Colors;
+import com.superempires.game.util.Helper;
 
-public abstract class Tile extends PhysicalObject implements IDrawable
+public abstract class Tile extends PhysicalObject implements IDrawable, IActionable
 {
 	/**
 	 * Dimensions (width & height) of each tile in pixels
@@ -150,7 +152,12 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 			this.building.setTile(null);
 		
 		this.building = building;
-		building.setTile(this);
+		
+		if(building != null)
+		{
+			building.setTransform(getTransform());
+			building.setTile(this);
+		}
 	}
 
 	public Unit getUnit() { return unit; }
@@ -216,10 +223,13 @@ public abstract class Tile extends PhysicalObject implements IDrawable
 	
 	public int getId() { return id; }
 
-	public List<TileAction> getActions()
+	@Override
+	public List<Action> getActions()
 	{
-		return new ArrayList<>();
+		return Helper.combineLists(
+				getUnit() != null ? getUnit().getActions() : new ArrayList<Action>(), 
+				getBuilding() != null ? getBuilding().getActions() : new ArrayList<Action>());
 	}
 
-	public String getName() { return "Generic Tile"; }
+	public abstract String getName();
 }

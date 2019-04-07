@@ -18,7 +18,8 @@ public class GUI
 	private List<GUIElement> elements = new ArrayList<>();
 	private List<IInteractable> interactables = new ArrayList<>();
 	
-	private List<GUIElement> removes = new ArrayList<>();
+	private List<GUIElement> removes = new ArrayList<>(), adds = new ArrayList<>();
+	private List<RenderQue> renderQues = new ArrayList<>();
 	
 	private boolean locked = false;
 	
@@ -83,15 +84,23 @@ public class GUI
 		
 	public void addElement(GUIElement e, RenderQue queSpot)
 	{
-		e.setGUI(this);
-		elements.add(e);
-		
-		List<GUIElement> elems = elementsPerPhase.getOrDefault(queSpot, new LinkedList<GUIElement>());
-		elems.add(e);
-		elementsPerPhase.put(queSpot, elems);
-		
-		if(e instanceof IInteractable)
-			interactables.add((IInteractable)e);
+		if(!locked)
+		{
+			e.setGUI(this);
+			elements.add(e);
+			
+			List<GUIElement> elems = elementsPerPhase.getOrDefault(queSpot, new LinkedList<GUIElement>());
+			elems.add(e);
+			elementsPerPhase.put(queSpot, elems);
+			
+			if(e instanceof IInteractable)
+				interactables.add((IInteractable)e);
+		}
+		else
+		{
+			adds.add(e);
+			renderQues.add(queSpot);
+		}
 	}
 	
 	public void removeElement(GUIElement e)
@@ -112,6 +121,8 @@ public class GUI
 			
 			if(e instanceof IInteractable)
 				interactables.remove((IInteractable)e);
+			
+			e.dispose();
 		}
 		else
 			removes.add(e);
@@ -133,6 +144,9 @@ public class GUI
 	
 	private void clearGarbage()
 	{
+		while(adds.size() > 0)
+			addElement(adds.remove(adds.size() - 1), renderQues.remove(renderQues.size() - 1));
+		
 		while(removes.size() > 0)
 			removeElement(removes.remove(removes.size() - 1));
 	}

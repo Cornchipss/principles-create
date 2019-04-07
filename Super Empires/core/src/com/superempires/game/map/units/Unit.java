@@ -1,11 +1,12 @@
 package com.superempires.game.map.units;
 
+import com.superempires.game.map.actions.IActionable;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.objects.PhysicalObject;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.IDrawable;
 
-public abstract class Unit extends PhysicalObject implements IDrawable
+public abstract class Unit extends PhysicalObject implements IDrawable, IActionable
 {
 	private static int currentUnitId = 0;
 	private Tile tile;

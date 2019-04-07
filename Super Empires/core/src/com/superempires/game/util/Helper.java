@@ -1,5 +1,8 @@
 package com.superempires.game.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class Helper
@@ -43,5 +46,15 @@ public class Helper
 		
 		for(int i = 0; i < ratios.length; i++)
 			ratios[i] /= sum;
+	}
+	
+	public static <T> List<T> combineLists(List<? extends T> l1, List<? extends T> l2)
+	{
+		List<T> list = new ArrayList<>(l1.size() + l2.size());
+		
+		list.addAll(l1);
+		list.addAll(l2);
+		
+		return list;
 	}
 }

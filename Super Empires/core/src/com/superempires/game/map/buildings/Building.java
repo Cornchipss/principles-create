@@ -1,11 +1,12 @@
 package com.superempires.game.map.buildings;
 
+import com.superempires.game.map.actions.IActionable;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.objects.PhysicalObject;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.IDrawable;
 
-public abstract class Building extends PhysicalObject implements IDrawable
+public abstract class Building extends PhysicalObject implements IDrawable, IActionable
 {
 	private Tile tile;
 	private static int currentingBuildingID = 0;

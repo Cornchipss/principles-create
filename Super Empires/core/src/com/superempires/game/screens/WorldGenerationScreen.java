@@ -79,7 +79,7 @@ public class WorldGenerationScreen implements Screen
 				}
 				catch(Exception ex)
 				{
-					ex.printStackTrace();
+					
 				}
 
 				batch.end();

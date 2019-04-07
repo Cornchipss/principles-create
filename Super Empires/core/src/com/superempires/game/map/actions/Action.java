@@ -1,15 +1,15 @@
-package com.superempires.game.map.tiling.actions;
+package com.superempires.game.map.actions;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.superempires.game.util.Callback;
 
-public class TileAction
+public class Action
 {
 	private String name;
 	private Texture buttonTexture;
 	private Callback action;
 	
-	public TileAction(String name, Texture texture, Callback action)
+	public Action(String name, Texture texture, Callback action)
 	{
 		this.name = name;
 		this.buttonTexture = texture;

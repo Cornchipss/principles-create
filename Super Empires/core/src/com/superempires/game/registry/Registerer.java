@@ -1,5 +1,8 @@
 package com.superempires.game.registry;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+
 public class Registerer
 {
 	public static void registerAll()
@@ -9,6 +12,11 @@ public class Registerer
 		///
 		GameRegistry.registerFont("font-title", "MeathFLF.ttf");
 		GameRegistry.registerFont("font-default", "CELTG___.TTF");
+		
+		FreeTypeFontParameter param = new FreeTypeFontParameter();
+		param.color = Color.WHITE;
+		
+		GameRegistry.registerBitmapFont("font-default-white", GameRegistry.buildFont("font-default", param));
 		
 		///
 		// TEXTURES
@@ -26,10 +34,9 @@ public class Registerer
 		GameRegistry.registerTexture("tile-water", "tiles/tile-water.png");
 		
 		// Buildings
-		GameRegistry.registerTexture("building", "buildings/building.png");
-		GameRegistry.registerTexture("building-tree", "buildings/building-tree.png");
 		GameRegistry.registerTexture("building-tree-top", "buildings/building-tree-top.png");
 		GameRegistry.registerTexture("building-tree-bottom", "buildings/building-tree-bottom.png");
+		GameRegistry.registerTexture("building-town-hall", "buildings/buildings-town-hall.png");
 		
 		// Units
 		GameRegistry.registerTexture("unit-colonization", "units/unit-colonization.png");

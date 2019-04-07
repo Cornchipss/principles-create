@@ -49,7 +49,7 @@ public class MainMenuScreen implements Screen
 				(
 					new Transform(-125, -h / 2 + WINDOW_BORDER, 250, 40), 
 					gui,
-					GameRegistry.getFont("font-default", params2),
+					GameRegistry.buildFont("font-default", params2),
 					new Callback()
 					{
 						@Override
@@ -70,7 +70,7 @@ public class MainMenuScreen implements Screen
 			new GUIText
 			(
 				-w / 2, 0, w, h / 2 - WINDOW_BORDER, 
-				gui, GameRegistry.getFont("font-title", params), "Super Empires", 
+				gui, GameRegistry.buildFont("font-title", params), "Super Empires", 
 				Align.center
 			), 
 			RenderQue.MEDIUM

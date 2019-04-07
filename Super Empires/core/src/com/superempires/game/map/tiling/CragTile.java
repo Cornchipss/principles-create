@@ -28,4 +28,9 @@ public class CragTile extends Tile
 		return false;
 	}
 
+	@Override
+	public String getName()
+	{
+		return "Crag Tile";
+	}
 }

@@ -1,14 +1,14 @@
 package com.superempires.game.map.tiling;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.natural.Tree;
-import com.superempires.game.map.tiling.actions.TileAction;
 import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.util.Callback;
+import com.superempires.game.util.Helper;
 
 public class PlainsTile extends Tile
 {
@@ -42,10 +42,10 @@ public class PlainsTile extends Tile
 	}
 	
 	@Override
-	public List<TileAction> getActions()
+	public List<Action> getActions()
 	{
 		if(getBuilding() == null)
-			return Arrays.asList(new TileAction("Plant Crops", GameRegistry.getTexture("button-plant"), 
+			return Helper.combineLists(super.getActions(), Arrays.asList(new Action("Plant Tree", GameRegistry.getTexture("button-plant"), 
 			new Callback()
 			{
 				@Override
@@ -53,8 +53,17 @@ public class PlainsTile extends Tile
 				{
 					setBuilding(new Tree(getTransform(), getBiome().getShadingColor()));
 				}
-			}));
+			}),
+			new Action("sysout", GameRegistry.getTexture("tile-crag"), 
+			new Callback()
+			{
+				@Override
+				public void run(Object... args)
+				{
+					System.out.println("Plains Button Pressed");
+				}
+			})));
 		else
-			return new ArrayList<>();
+			return super.getActions();
 	}
 }
