@@ -1,5 +1,6 @@
 package com.superempires.game.map.generation;
 
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.biome.BeachBiome;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.biome.BiomeType;
@@ -81,8 +82,10 @@ public class DefaultMapGenerator extends MapGenerator
 	}
 	
 	@Override
-	public Vector2i generateMap(final Tile[][] tiles, long seed)
+	public Vector2i generateMap(GameMap map, long seed)
 	{
+		Tile[][] tiles = map.getTiles();
+		
 		setText("Pre-Biome Generation Init");
 
 		RNG rng = new RNG(seed * 5);
@@ -127,7 +130,7 @@ public class DefaultMapGenerator extends MapGenerator
 				
 				double temperature = (temperatureGenerator.noise(x * scale * 0.3, y * scale * 0.3) + 1) * 50;
 				
-				b.generateTile(tiles, x, y, temperature, rng);
+				b.generateTile(map, x, y, temperature, rng);
 			}
 			
 			setSubText("Row: " + (y + 1) + " / " + tiles.length);
@@ -140,7 +143,7 @@ public class DefaultMapGenerator extends MapGenerator
 			spawnY = rng.getRandom().nextInt(tiles.length);
 		} while(tiles[spawnY][spawnX].getBiome().getType() == BiomeType.WATER);
 		
-		tiles[spawnY][spawnX].setUnit(new ColonizationUnit(tiles[spawnY][spawnX].getTransform()));
+		tiles[spawnY][spawnX].setUnit(new ColonizationUnit(tiles[spawnY][spawnX].getTransform(), map));
 		
 		System.out.println(spawnX + " , " + spawnY);
 		

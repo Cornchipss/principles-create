@@ -3,6 +3,7 @@ package com.superempires.game.map.tiling;
 import java.util.Arrays;
 import java.util.List;
 
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.natural.Tree;
@@ -12,9 +13,9 @@ import com.superempires.game.util.Helper;
 
 public class PlainsTile extends Tile
 {
-	public PlainsTile(float x, float y, double temperature, Biome biome)
+	public PlainsTile(float x, float y, double temperature, Biome biome, GameMap map)
 	{
-		super(x, y, temperature, GameRegistry.getTexture("tile-grass"), biome);
+		super(x, y, temperature, GameRegistry.getTexture("tile-grass"), biome, map);
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class PlainsTile extends Tile
 				@Override
 				public void run(Object... args)
 				{
-					setBuilding(new Tree(getTransform(), getBiome().getShadingColor()));
+					setBuilding(new Tree(getTransform(), getMap(), getBiome().getShadingColor()));
 				}
 			}),
 			new Action("sysout", GameRegistry.getTexture("tile-crag"), 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.actions.IActionable;
 import com.superempires.game.map.biome.Biome;
@@ -66,9 +67,9 @@ public abstract class Tile extends PhysicalObject implements IDrawable, IActiona
 	 * @param y Index Y
 	 * @param texture Texture to render
 	 */
-	public Tile(float x, float y, double temperature, Texture texture, Biome biome)
+	public Tile(float x, float y, double temperature, Texture texture, Biome biome, GameMap map)
 	{
-		super(x * 0.75f * Tile.DIMENSIONS, y * Tile.DIMENSIONS - (x % 2) * Tile.DIMENSIONS / 2);
+		super(x * 0.75f * Tile.DIMENSIONS, y * Tile.DIMENSIONS - (x % 2) * Tile.DIMENSIONS / 2, map);
 		this.temperature = temperature;
 		this.biome = biome;
 		
@@ -163,8 +164,12 @@ public abstract class Tile extends PhysicalObject implements IDrawable, IActiona
 	public Unit getUnit() { return unit; }
 	public void setUnit(Unit unit)
 	{
+		setUnit(unit, false);
+	}	
+	public void setUnit(Unit unit, boolean redoRadius)
+	{
 		if(this.unit != null)
-			this.unit.setTile(null);
+			removeUnit();
 		
 		this.unit = unit;
 		
@@ -172,6 +177,11 @@ public abstract class Tile extends PhysicalObject implements IDrawable, IActiona
 		{
 			unit.setTransform(getTransform());
 			unit.setTile(this);
+		}
+		
+		if(redoRadius)
+		{
+			getMap().resetMovement();
 		}
 	}
 	
@@ -227,9 +237,17 @@ public abstract class Tile extends PhysicalObject implements IDrawable, IActiona
 	public List<Action> getActions()
 	{
 		return Helper.combineLists(
-				getUnit() != null ? getUnit().getActions() : new ArrayList<Action>(), 
-				getBuilding() != null ? getBuilding().getActions() : new ArrayList<Action>());
+				getUnit() != null && getUnit().getActions() != null ? getUnit().getActions() : new ArrayList<Action>(), 
+				getBuilding() != null && getBuilding().getActions() != null ? getBuilding().getActions() : new ArrayList<Action>());
 	}
 
 	public abstract String getName();
+
+	public void removeUnit()
+	{
+		unit.setTile(null);
+		this.unit = null;
+		
+		this.getMap().redrawRadius();
+	}
 }

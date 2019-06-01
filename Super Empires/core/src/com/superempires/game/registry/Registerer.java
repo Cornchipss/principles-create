@@ -36,9 +36,10 @@ public class Registerer
 		// Buildings
 		GameRegistry.registerTexture("building-tree-top", "buildings/building-tree-top.png");
 		GameRegistry.registerTexture("building-tree-bottom", "buildings/building-tree-bottom.png");
-		GameRegistry.registerTexture("building-town-hall", "buildings/buildings-town-hall.png");
+		GameRegistry.registerTexture("building-town-hall", "buildings/building-town-hall.png");
 		
 		// Units
 		GameRegistry.registerTexture("unit-colonization", "units/unit-colonization.png");
+		GameRegistry.registerTexture("unit-troop-basic", "units/unit-troop-basic.png");
 	}
 }

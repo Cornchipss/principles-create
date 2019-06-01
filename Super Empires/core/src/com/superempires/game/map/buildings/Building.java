@@ -1,5 +1,6 @@
 package com.superempires.game.map.buildings;
 
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.IActionable;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.objects.PhysicalObject;
@@ -13,9 +14,9 @@ public abstract class Building extends PhysicalObject implements IDrawable, IAct
 	
 	private int id;
 	
-	public Building(Transform t)
+	public Building(Transform t, GameMap map)
 	{
-		super(t);
+		super(t, map);
 		
 		this.id = currentingBuildingID++;
 	}

@@ -1,13 +1,14 @@
 package com.superempires.game.map.tiling;
 
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
 public class WaterTile extends Tile
 {
-	public WaterTile(float x, float y, double temperature, Biome biome)
+	public WaterTile(float x, float y, double temperature, Biome biome, GameMap map)
 	{
-		super(x, y, temperature, GameRegistry.getTexture("tile-water"), biome);
+		super(x, y, temperature, GameRegistry.getTexture("tile-water"), biome, map);
 	}
 
 	@Override

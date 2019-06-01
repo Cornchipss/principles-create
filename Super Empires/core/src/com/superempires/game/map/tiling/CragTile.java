@@ -1,13 +1,14 @@
 package com.superempires.game.map.tiling;
 
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.registry.GameRegistry;
 
 public class CragTile extends Tile
 {
-	public CragTile(float x, float y, double temperature, Biome biome)
+	public CragTile(float x, float y, double temperature, Biome biome, GameMap map)
 	{
-		super(x, y, temperature, GameRegistry.getTexture("tile-crag"), biome);
+		super(x, y, temperature, GameRegistry.getTexture("tile-crag"), biome, map);
 	}
 
 	@Override

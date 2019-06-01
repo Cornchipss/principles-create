@@ -7,7 +7,7 @@ public class Transform implements Cloneable
 	private float x, y;
 	private float width, height;
 	private Vector2 center;
-
+	
 	public Transform()
 	{
 		this(0, 0, 0, 0);
@@ -88,7 +88,7 @@ public class Transform implements Cloneable
 
 	public void setWidth(float w) { this.width = w; }
 	public void setHeight(float h) { this.height = h; }
-
+	
 	public Vector2 getDimensions() { return new Vector2(getWidth(), getHeight()); }
 	
 	public boolean isWithin(float x, float y)

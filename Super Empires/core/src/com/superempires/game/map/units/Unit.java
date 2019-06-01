@@ -1,5 +1,6 @@
 package com.superempires.game.map.units;
 
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.IActionable;
 import com.superempires.game.map.tiling.Tile;
 import com.superempires.game.objects.PhysicalObject;
@@ -12,9 +13,9 @@ public abstract class Unit extends PhysicalObject implements IDrawable, IActiona
 	private Tile tile;
 	private int id;
 	
-	public Unit(Transform transform)
+	public Unit(Transform transform, GameMap map)
 	{
-		super(transform);
+		super(transform, map);
 		
 		this.id = currentUnitId++;
 	}

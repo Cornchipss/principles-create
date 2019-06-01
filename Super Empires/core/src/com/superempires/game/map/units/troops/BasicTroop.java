@@ -1,5 +1,6 @@
-package com.superempires.game.map.buildings.town;
+package com.superempires.game.map.units.troops;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -8,17 +9,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.Action;
-import com.superempires.game.map.buildings.Building;
+import com.superempires.game.map.units.Unit;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.registry.GameRegistry;
 
-public class TownHall extends Building
+public class BasicTroop extends Unit
 {
-	private Texture texture = GameRegistry.getTexture("building-town-hall");
+	private Texture texture = GameRegistry.getTexture("unit-troop-basic");
 	
-	public TownHall(Transform t, GameMap map)
+	public BasicTroop(Transform transform, GameMap map)
 	{
-		super(t, map);
+		super(transform, map);
 	}
 
 	@Override
@@ -48,7 +49,12 @@ public class TownHall extends Building
 	@Override
 	public List<Action> getActions()
 	{
-		return null;
+		return new ArrayList<>();
 	}
 
+	@Override
+	public double getTravelRadius()
+	{
+		return 3.5;
+	}
 }

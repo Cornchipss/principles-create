@@ -3,6 +3,7 @@ package com.superempires.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.superempires.game.io.InputManager;
 import com.superempires.game.registry.GameRegistry;
 import com.superempires.game.screens.LoadingScreen;
 
@@ -38,6 +39,8 @@ public class SuperEmpires extends Game
 		}
 		
 		super.render();
+
+		InputManager.update();
 	}
 
 	@Override

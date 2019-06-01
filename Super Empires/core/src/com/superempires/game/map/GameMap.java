@@ -19,6 +19,7 @@ import com.superempires.game.gui.GUI;
 import com.superempires.game.gui.GUIButtonTextured;
 import com.superempires.game.gui.GUIElementHolder;
 import com.superempires.game.gui.GUIText;
+import com.superempires.game.io.InputManager;
 import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.map.pathing.Path;
@@ -49,14 +50,13 @@ public class GameMap
 	
 	private RenderQue renderPhase;
 	
-	private GUIElementHolder holder;
+	private GUIElementHolder guiHolder;
 	
-	public GameMap(Tile[][] tiles, Vector2i startPosition)
+	public GameMap(Tile[][] tiles)
 	{
 		WIDTH = tiles[0].length;
 		HEIGHT = tiles.length;
 		
-		this.startPosition = startPosition;
 		this.tiles = tiles;
 		
 		gui = new GUI();
@@ -64,13 +64,13 @@ public class GameMap
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		
-		holder = new GUIElementHolder(new Transform(-w / 2, -h / 2, w, 100), gui);
+		guiHolder = new GUIElementHolder(new Transform(-w / 2, -h / 2, w, 100), gui);
 		
-		holder.setBackground(new Color(0, 0, 0, 0.2f));
+		guiHolder.setBackground(new Color(0, 0, 0, 0.2f));
 		
-		holder.setHidden(true);
+		guiHolder.setHidden(true);
 		
-		gui.addElement(holder, RenderQue.LOW);
+		gui.addElement(guiHolder, RenderQue.LOW);
 	}
 	
 	private Map<Unit, Double> radiusRemaining = new HashMap<>();
@@ -93,7 +93,7 @@ public class GameMap
 			winWidth = Gdx.graphics.getWidth();
 			winHeight = Gdx.graphics.getHeight();
 			
-			holder.setTransform(new Transform(-winWidth / 2, -winHeight / 2, winWidth, 100));
+			guiHolder.setTransform(new Transform(-winWidth / 2, -winHeight / 2, winWidth, 100));
 			
 			gui.onResize(winWidth, winHeight);
 			
@@ -130,23 +130,23 @@ public class GameMap
 		// Mouse within window
 		if(mouseX >= 0 && mouseX <= Gdx.graphics.getWidth() && mouseY >= 0 && mouseY <= Gdx.graphics.getHeight())
 		{
-		    Vector2 mouseWorldCoords = cam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
+		    Vector2 mouseWorldCoords = cam.screenToWorldCoords(mouseX, mouseY);
 		    
-			Vector2i index = worldCoordsToTileIndex(mouseWorldCoords);
+			Vector2i tileIndex = worldCoordsToTileIndex(mouseWorldCoords);
 			
 			boolean isInSelectedRange = isInSelectedRange(hoveredTile);
 			
-			if(!gui.isWithin(zeroCam.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY())) && within(index.x, index.y))
+			if(!gui.isWithin(zeroCam.screenToWorldCoords(mouseX, mouseY)) && within(tileIndex.x, tileIndex.y))
 			{
 				// Handles the old highlighted tile
 				if(hoveredTile != null && !isInSelectedRange)
 					hoveredTile.setHighlighted(false);
 				
 				// Gets the new highlighted tile
-				hoveredTile = getTile(index.x, index.y);
+				hoveredTile = getTile(tileIndex.x, tileIndex.y);
 				
 				
-				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+				if(InputManager.isButtonJustPressed(Input.Buttons.LEFT))
 				{
 					if(!hoveredTile.equals(selectedTile))
 					{
@@ -154,13 +154,16 @@ public class GameMap
 						{
 							if(isInSelectedRange && selectedTile.getUnit() != null && hoveredTile.canHoldUnit(selectedTile.getUnit()))
 							{
-								hoveredTile.setUnit(selectedTile.getUnit());
+								Unit unit = selectedTile.getUnit();
+								Tile from = selectedTile;
+								Tile to = hoveredTile;
 								
-								radiusRemaining.put(selectedTile.getUnit(), 
-										radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0) + 
-										paths.get(hoveredTile).getTravelTime());
+								// Recalculates the new radius
+								redrawRadius();
 								
-								selectedTile.setUnit(null);
+								from.removeUnit();
+								
+								to.setUnit(unit);
 							}
 							
 							clearSelectedTiles();
@@ -171,15 +174,15 @@ public class GameMap
 						
 						createTileGUI(selectedTile);
 						
-						// Show radius if it has a unit
-						showTileRadius(index);
+						// Shows tile's radius if it has a unit
+						showTileRadius(tileIndex);
 					}
 				}
 				else
 				{
-					if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+					if(InputManager.isButtonJustPressed(Input.Buttons.RIGHT))
 					{
-						holder.setHidden(true);
+						guiHolder.setHidden(true);
 						
 						clearSelectedTiles();
 					}
@@ -190,6 +193,22 @@ public class GameMap
 		}
 	}
 	
+	public void redrawRadius()
+	{
+		if(selectedTile != null && selectedTile.getUnit() != null)
+			radiusRemaining.put(selectedTile.getUnit(),
+				radiusRemaining.getOrDefault(selectedTile.getUnit(), 0.0) + 
+				paths.get(hoveredTile).getTravelTime());
+	}
+	
+	public void resetMovement()
+	{
+		if(selectedTile != null && selectedTile.getUnit() != null)
+		{
+			showTileRadius(getTileIndex(selectedTile));
+		}
+	}
+
 	private void showTileRadius(Vector2i index)
 	{
 		if(selectedTile.getUnit() != null)
@@ -216,13 +235,13 @@ public class GameMap
 	private void createTileGUI(final Tile t)
 	{
 		List<Action> actions = t.getActions();
-		holder.setHidden(false);
+		guiHolder.setHidden(false);
 		
-		holder.removeAllElements();
+		guiHolder.removeAllElements();
 		
 		float w = Gdx.graphics.getWidth();
 		
-		holder.addElement
+		guiHolder.addElement
 		(
 			new GUIText
 			(
@@ -246,11 +265,11 @@ public class GameMap
 		
 		for(int i = 0; i < actions.size(); i++)
 		{
-			final Action a = actions.get(i);
+			final Action action = actions.get(i);
 			
 			float offset = i * (BTN_W + BTN_PADDING);
 			
-			holder.addElement
+			guiHolder.addElement
 			(
 				new GUIButtonTextured
 				(
@@ -261,12 +280,12 @@ public class GameMap
 						@Override
 						public void run(Object... args)
 						{	
-							a.getAction().run(args);
+							action.getAction().run(args);
 							
 							instance.createTileGUI(t);
 						}
-					}, a.getName(),
-					a.getButtonTexture()
+					}, action.getName(),
+					action.getButtonTexture()
 				).setUnhoveredColor(new Color(1, 1, 1, 0.9f)).setHoveredColor(Color.WHITE),
 				Align.bottomRight,
 				RenderQue.MEDIUM
@@ -538,4 +557,9 @@ public class GameMap
 			batch.end(batch.getShapeBatch());
 		}
 	}
+
+	public Tile[][] getTiles() { return tiles; }
+	
+	public void setStartingPosition(Vector2i s) { this.startPosition = s; }
+	public Vector2i getStartingPosition() { return startPosition; }
 }

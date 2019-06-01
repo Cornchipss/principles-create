@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.biome.Biome;
 import com.superempires.game.map.buildings.natural.Tree;
@@ -13,9 +14,9 @@ import com.superempires.game.util.Helper;
 
 public class SnowTile extends Tile
 {
-	public SnowTile(float x, float y, double temperature, Biome biome)
+	public SnowTile(float x, float y, double temperature, Biome biome, GameMap map)
 	{
-		super(x, y, temperature, GameRegistry.getTexture("tile-snow"), biome);
+		super(x, y, temperature, GameRegistry.getTexture("tile-snow"), biome, map);
 	}
 	
 	@Override
@@ -51,7 +52,7 @@ public class SnowTile extends Tile
 					@Override
 					public void run(Object... args)
 					{
-						setBuilding(new Tree(getTransform(), Color.WHITE));
+						setBuilding(new Tree(getTransform(), getMap(), Color.WHITE));
 					}
 				})));
 	}

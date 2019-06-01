@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.superempires.game.map.GameMap;
 import com.superempires.game.map.actions.Action;
 import com.superempires.game.map.buildings.Building;
 import com.superempires.game.objects.properties.Transform;
@@ -21,9 +22,9 @@ public class Tree extends Building
 	
 	private Color leafColor;
 	
-	public Tree(Transform t, Color leafColor)
+	public Tree(Transform t, GameMap map, Color leafColor)
 	{
-		super(t);
+		super(t, map);
 		
 		this.leafColor = leafColor;
 	}

@@ -29,14 +29,14 @@ public class WorldGenerationScreen implements Screen
 	
 	private volatile Vector2i startPosition;
 
+	private final GameMap map;
 	private final long SEED;
-	private final Tile[][] TILES;
-
+	
 	public WorldGenerationScreen(int w, int h, long seed)
 	{
 		this.SEED = seed;
 
-		TILES = new Tile[w][h];
+		map = new GameMap(new Tile[h][w]);
 	}
 
 	@Override
@@ -57,7 +57,8 @@ public class WorldGenerationScreen implements Screen
 	{
 		if(done())
 		{
-			SuperEmpires.swapScreen(new GameScreen(new GameMap(getTiles(), startPosition)));
+			map.setStartingPosition(startPosition);
+			SuperEmpires.swapScreen(new GameScreen(map));
 		}
 		else
 		{
@@ -147,7 +148,7 @@ public class WorldGenerationScreen implements Screen
 
 				setText("Registering Biomes");
 
-				startPosition = gen.generateMap(TILES, SEED);
+				startPosition = gen.generateMap(map, SEED);
 
 				done = true;
 			}
@@ -169,5 +170,5 @@ public class WorldGenerationScreen implements Screen
 	public boolean done() { return done; }
 	public Vector2i getStartPosition() { return startPosition; }
 	
-	public Tile[][] getTiles() { return TILES; }
+	public GameMap getMap() { return map; }
 }

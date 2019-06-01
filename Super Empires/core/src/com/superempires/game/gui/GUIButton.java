@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.superempires.game.io.InputManager;
 import com.superempires.game.objects.properties.Transform;
 import com.superempires.game.render.FancyCamera;
 import com.superempires.game.util.Callback;
@@ -79,7 +80,7 @@ public class GUIButton extends GUITextElement implements IInteractable
 		hovered = coords.x > getTransform().getX() && coords.x < getTransform().getX() + getTransform().getWidth() &&
 				coords.y > getTransform().getY() && coords.y < getTransform().getY() + getTransform().getHeight();
 		
-		if(hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+		if(hovered && InputManager.isButtonJustPressed(Input.Buttons.LEFT))
 			onClick.run(this);
 	}
 	
